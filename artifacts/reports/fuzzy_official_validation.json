@@ -1,0 +1,8 @@
+{
+  "errors": [],
+  "warnings": [],
+  "check_ids": true,
+  "validator_sha256": "f96f59934383a15095914f507620c078c474e8f9c60e864b2d051ed173a22dfc",
+  "stdout": "  required S1 entities: 1732544\n  valid S2/S3 match IDs: 9969589\n  matching_results.tsv: 1732544 rows (131317 empty, 1601227 non-empty).\n  candidate_pairs.tsv: 1732544 rows (1488 empty, 1731056 non-empty).\n",
+  "runtime_seconds": 32.42972041699977
+}

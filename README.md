@@ -1,8 +1,10 @@
 # Amazon ML Challenge 2026 — business entity resolution
 
-The real datasets have been audited. The selected CPU fuzzy-feature tree scores **0.890226 macro F0.5** on the development holdout and **0.875554 on a fresh, disjoint 2,000-S1 confirmation set**, without retuning. Its full-test run is in progress. A separate exact-match fallback (**0.690681** locally) is already packaged and officially validated. **Do not attribute the stronger model’s scores to the fallback files.** No leaderboard submission has been made.
+The real datasets have been audited. The selected CPU fuzzy-feature tree scores **0.890226 macro F0.5** on the development holdout and **0.875554 on a fresh, disjoint 2,000-S1 confirmation set**, without retuning. Its full-test run is complete, packaged, and officially validated with zero errors or warnings. A separate exact-match fallback (**0.690681** locally) is also packaged and officially validated. **Do not attribute the stronger model’s scores to the fallback files.** No leaderboard submission has been made.
 
-This repository snapshot contains the completed audit, experiments, reproducible scripts, reports, tests, official validator adapter, exact fallback package workflow, and GPU validation package. The stronger fuzzy full-test inference is intentionally left as a resumable local job; its output must be officially validated and packaged before any submission decision.
+This repository contains the completed audit, experiments, reproducible scripts, reports, tests, official validator integration, and packaging workflows. Large outputs, checkpoints, raw data, and the prepared GPU validation package remain local and excluded from Git; teammates must reproduce them or arrange a private artifact transfer.
+
+Selected full-test package: `outputs/fuzzy_tree_v1_submission.zip` (**307.4 MB**). Both TSVs contain **1,732,544 rows**. The model scored **44,931,896 candidates**, selected **5,196,796 links**, and left **131,317** S1 match lists empty. Runtime: **2,165.16 seconds (36.1 minutes)**; peak measured retrieval RSS: **7.55 GiB**. See [official validation](artifacts/reports/fuzzy_official_validation.json) and [runtime](artifacts/reports/fuzzy_runtime.json). The test partition has **9,969,589 targets**; 10,320,219 is the training target count.
 
 ## Completed
 
@@ -147,7 +149,7 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 ## Remaining work
 
 - [x] Complete full-file official validation and package the fallback.
-- [ ] Finish and officially validate the selected fuzzy-tree full-test run (`outputs/fuzzy_tree_v1`). The candidate index, runtime/memory gates, and batched CPU scorer are implemented and tested.
+- [x] Finish, officially validate, and package the selected fuzzy-tree full-test run (`outputs/fuzzy_tree_v1`).
 - [ ] Run the supplied GPU pretrained-reranker benchmark and import scores; retain it only if grouped results improve.
 - [ ] Improve remaining retrieval misses (especially altered scripts/names) toward 99% recall; dense/BM25/RRF additions require measured gains and feasible runtime.
 - [ ] After a successful pretrained baseline, prepare supervised hard negatives and at most one mining round; preserve v1/v2 separately.
@@ -156,6 +158,6 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 - [ ] Test a versioned normalization that preserves Unicode combining marks, particularly for noisy target scripts; never change frozen model preprocessing in place.
 - [ ] Recheck neural compliance if applicable, freeze the selected final pipeline, run full test inference, validate, package, and seek explicit human approval before a leaderboard upload.
 
-For parallel work, start from the latest pushed commit and use separate output directories. The highest-value independent tasks are GPU reranker benchmarking, retrieval-recall improvements, France/domain-shift validation, and review of the final fuzzy full-test artifacts. Do not overwrite the frozen checkpoints or claim a leaderboard score from the exact fallback.
+For parallel work, start from the latest pushed commit and use separate output directories. The highest-value independent tasks are GPU reranker benchmarking, retrieval-recall improvements, France/domain-shift investigation (France has no supplied training labels), and review of the final fuzzy full-test artifacts. Do not overwrite the frozen checkpoints or claim a leaderboard score from local validation.
 
 `artifacts/submissions/submission_log.csv` remains empty. No submission slot has been used. Never exceed five uploads per challenge calendar day; the challenge timezone and any additional rules still need confirmation. Reserve the final two hours for packaging and validation.

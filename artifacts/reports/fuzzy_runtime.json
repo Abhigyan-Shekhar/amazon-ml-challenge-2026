@@ -1,0 +1,8 @@
+{
+  "s1_rows": 1732544,
+  "candidates": 44931896,
+  "matches": 5196796,
+  "seconds": 2165.159070749999,
+  "peak_retrieval_rss_gib": 7.5526580810546875,
+  "official_validation": "passed; see fuzzy_official_validation.json"
+}
