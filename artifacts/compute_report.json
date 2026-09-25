@@ -1,0 +1,27 @@
+{
+  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "cpu_cores": 10,
+  "cpu_name": "arm",
+  "disk": {
+    "total": 245107195904,
+    "used": 223399043072,
+    "free": 21708152832
+  },
+  "ram_bytes": 17179869184,
+  "cuda_available": false,
+  "gpus": [],
+  "external_gpu_available": "User-confirmed external access; allocation must be checked",
+  "mode": "B",
+  "errors": [],
+  "mps_available": false,
+  "dataset": {
+    "tsv_count": 0,
+    "total_bytes": 0
+  },
+  "runtime_estimates": {
+    "lexical": "Pending actual record count and sample benchmark",
+    "bge_m3": "Not launched; requires verified model, sample throughput and budget gate",
+    "reranker": "Not launched; requires candidate count, verified model, sample throughput and budget gate",
+    "fine_tuning": "No CPU training planned; external CUDA GPU and successful pretrained validation required"
+  }
+}

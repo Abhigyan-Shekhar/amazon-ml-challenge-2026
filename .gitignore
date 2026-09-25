@@ -1,0 +1,24 @@
+__pycache__/
+.pytest_cache/
+.venv/
+data/raw/*
+data/processed/*
+artifacts/smoke/
+
+# Local configuration, credentials, and generated competition assets
+.DS_Store
+.env
+.env.*
+!.env.example
+config.json
+outputs/
+artifacts/embeddings/
+artifacts/candidates/
+artifacts/models/
+artifacts/validation/
+artifacts/experiments/
+*.jsonl
+*.jsonl.partial
+*.safetensors
+*.pt
+*.pth
