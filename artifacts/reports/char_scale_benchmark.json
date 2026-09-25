@@ -1,0 +1,13 @@
+{
+  "sample_rows": 20000,
+  "sample_nnz": 3723556,
+  "average_nnz": 186.1778,
+  "sample_fit_seconds": 1.5914308329993219,
+  "sample_transform_seconds": 0.9695942910002486,
+  "sample_query_100_seconds": 0.043329166999683366,
+  "projected_target_sparse_matrix_gib_lower_bound": 14.353959101723134,
+  "projected_transform_seconds_linear": 500.32127121361475,
+  "projected_full_query_seconds_linear": 493408.2030994899,
+  "caveat": "rough linear projections, exclude strings, vocabulary, temporary products and candidate storage; unseen ngrams change sparsity",
+  "decision": "use selective lexical blocking before within-block char scoring on this 16 GiB CPU host"
+}

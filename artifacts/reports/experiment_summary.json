@@ -1,0 +1,1268 @@
+{
+  "sample_v1": {
+    "sample_s1": 5000,
+    "split_sizes": {
+      "train": 3000,
+      "calibration": 1000,
+      "validation": 1000
+    },
+    "final_k_per_source": 50,
+    "ranking": "char",
+    "blocking": {
+      "method": "exact name OR two rare name tokens OR rare name token plus address clue; token-overlap cap",
+      "k_per_source": 100,
+      "scanned_targets": 10320219,
+      "scored_pairs": 6635589,
+      "sample_s1": 5000,
+      "seconds": 154.00645625000016,
+      "label_independent": true
+    },
+    "selected_by_calibration": "logistic_features",
+    "runtime_seconds": 71.15028899999925,
+    "results": {
+      "char_cosine": {
+        "threshold": 0.6349999999999999,
+        "validation": {
+          "macro_F0.5": 0.6909512240580342,
+          "precision": 0.7902370003537319,
+          "recall": 0.6390160183066361,
+          "singleton_F0.5": 0.36538461538461536,
+          "matched_F0.5": 0.7088093080780951,
+          "multi_match_F0.5": 0.722797085121956,
+          "candidate_pair_recall": 0.7580091533180778,
+          "entity_complete_coverage": 0.468,
+          "matched_entity_complete_coverage": 0.4388185654008439
+        },
+        "calibration": {
+          "macro_F0.5": 0.685568083183066,
+          "precision": 0.7899860917941586,
+          "recall": 0.6434437836306995,
+          "singleton_F0.5": 0.4782608695652174,
+          "matched_F0.5": 0.6955640284937799,
+          "multi_match_F0.5": 0.7185255520255327
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.63823285550929,
+            "precision": 0.7675568743818002,
+            "recall": 0.5693323550990462,
+            "singleton_F0.5": 0.375,
+            "matched_F0.5": 0.6548580884888239,
+            "multi_match_F0.5": 0.6737648030859316
+          },
+          "US": {
+            "macro_F0.5": 0.7266864940138943,
+            "precision": 0.802863436123348,
+            "recall": 0.6835443037974683,
+            "singleton_F0.5": 0.35714285714285715,
+            "matched_F0.5": 0.7449034338596496,
+            "multi_match_F0.5": 0.7552408754785027
+          },
+          "S2-": {
+            "macro_F0.5": 0.64582170417302,
+            "precision": 0.7652482269503547,
+            "recall": 0.6579268292682927,
+            "singleton_F0.5": 0.6229508196721312,
+            "matched_F0.5": 0.6489996630672209,
+            "multi_match_F0.5": 0.7341051645559096
+          },
+          "S3-": {
+            "macro_F0.5": 0.6696623586166156,
+            "precision": 0.8151023288637967,
+            "recall": 0.6223060344827587,
+            "singleton_F0.5": 0.7058823529411765,
+            "matched_F0.5": 0.6647699870790189,
+            "multi_match_F0.5": 0.7212475112151856
+          }
+        }
+      },
+      "logistic_features": {
+        "threshold": 0.365,
+        "validation": {
+          "macro_F0.5": 0.7719366477478022,
+          "precision": 0.8904267589388697,
+          "recall": 0.6624713958810069,
+          "singleton_F0.5": 0.6923076923076923,
+          "matched_F0.5": 0.7763044807466268,
+          "multi_match_F0.5": 0.7885801561967529,
+          "candidate_pair_recall": 0.7580091533180778,
+          "entity_complete_coverage": 0.468,
+          "matched_entity_complete_coverage": 0.4388185654008439
+        },
+        "calibration": {
+          "macro_F0.5": 0.7699398767732893,
+          "precision": 0.900852052672347,
+          "recall": 0.658736901727556,
+          "singleton_F0.5": 0.717391304347826,
+          "matched_F0.5": 0.7724736653808064,
+          "multi_match_F0.5": 0.7885716468114363
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.7073267807405589,
+            "precision": 0.8442703232125367,
+            "recall": 0.632428466617755,
+            "singleton_F0.5": 0.5833333333333334,
+            "matched_F0.5": 0.7151579458399625,
+            "multi_match_F0.5": 0.7384934635193572
+          },
+          "US": {
+            "macro_F0.5": 0.8157325978668062,
+            "precision": 0.920253164556962,
+            "recall": 0.6816690107829348,
+            "singleton_F0.5": 0.7857142857142857,
+            "matched_F0.5": 0.8172123738179868,
+            "multi_match_F0.5": 0.8217216313515159
+          },
+          "S2-": {
+            "macro_F0.5": 0.6960344819654031,
+            "precision": 0.874384236453202,
+            "recall": 0.649390243902439,
+            "singleton_F0.5": 0.7786885245901639,
+            "matched_F0.5": 0.6845495238785912,
+            "multi_match_F0.5": 0.7632606470303437
+          },
+          "S3-": {
+            "macro_F0.5": 0.7552491315444102,
+            "precision": 0.9045553145336226,
+            "recall": 0.6740301724137931,
+            "singleton_F0.5": 0.8739495798319328,
+            "matched_F0.5": 0.739215813330772,
+            "multi_match_F0.5": 0.782925921845089
+          }
+        }
+      },
+      "cheap_logistic": {
+        "threshold": 0.275,
+        "validation": {
+          "macro_F0.5": 0.750492485290039,
+          "precision": 0.8675728155339806,
+          "recall": 0.6390160183066361,
+          "singleton_F0.5": 0.6346153846153846,
+          "matched_F0.5": 0.7568486131751466,
+          "multi_match_F0.5": 0.771876679013476,
+          "candidate_pair_recall": 0.7580091533180778,
+          "entity_complete_coverage": 0.468,
+          "matched_entity_complete_coverage": 0.4388185654008439
+        },
+        "calibration": {
+          "macro_F0.5": 0.7408172763032712,
+          "precision": 0.8791079812206573,
+          "recall": 0.6363636363636364,
+          "singleton_F0.5": 0.6304347826086957,
+          "matched_F0.5": 0.746139702623974,
+          "multi_match_F0.5": 0.7664613591422522
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.667274809145693,
+            "precision": 0.7818515123739689,
+            "recall": 0.6258253851797505,
+            "singleton_F0.5": 0.2916666666666667,
+            "matched_F0.5": 0.6909974286706841,
+            "multi_match_F0.5": 0.7097335863319962
+          },
+          "US": {
+            "macro_F0.5": 0.8069017825422465,
+            "precision": 0.9305929919137467,
+            "recall": 0.647444913267698,
+            "singleton_F0.5": 0.9285714285714286,
+            "matched_F0.5": 0.8009039830901039,
+            "multi_match_F0.5": 0.8129956599653337
+          },
+          "S2-": {
+            "macro_F0.5": 0.6757414263368211,
+            "precision": 0.8396825396825397,
+            "recall": 0.6451219512195122,
+            "singleton_F0.5": 0.7459016393442623,
+            "matched_F0.5": 0.6659925129120969,
+            "multi_match_F0.5": 0.7528286399883034
+          },
+          "S3-": {
+            "macro_F0.5": 0.7209761518924831,
+            "precision": 0.8942965779467681,
+            "recall": 0.6336206896551724,
+            "singleton_F0.5": 0.8403361344537815,
+            "matched_F0.5": 0.7048537478915813,
+            "multi_match_F0.5": 0.7541952765418704
+          }
+        }
+      }
+    }
+  },
+  "exact_core_v1": {
+    "sample_s1": 5000,
+    "split_sizes": {
+      "train": 3000,
+      "calibration": 1000,
+      "validation": 1000
+    },
+    "final_k_per_source": 100,
+    "ranking": "blocking",
+    "blocking": {
+      "method": "exact sorted name core OR exact sorted address tokens",
+      "k_per_source": 100,
+      "scanned_targets": 10320219,
+      "scored_pairs": 192878,
+      "sample_s1": 5000,
+      "seconds": 103.77678566600025,
+      "label_independent": true,
+      "address_path": false,
+      "exact_core_address": true
+    },
+    "selected_by_calibration": "logistic_features",
+    "runtime_seconds": 31.494447500000206,
+    "results": {
+      "char_cosine": {
+        "threshold": 0.5799999999999998,
+        "validation": {
+          "macro_F0.5": 0.6774046891459802,
+          "precision": 0.871676891615542,
+          "recall": 0.48770022883295194,
+          "singleton_F0.5": 0.8461538461538461,
+          "matched_F0.5": 0.668148406272131,
+          "multi_match_F0.5": 0.6824372783217452,
+          "candidate_pair_recall": 0.5331807780320366,
+          "entity_complete_coverage": 0.205,
+          "matched_entity_complete_coverage": 0.16139240506329114
+        },
+        "calibration": {
+          "macro_F0.5": 0.6627914910443558,
+          "precision": 0.8602794411177644,
+          "recall": 0.4882469555366752,
+          "singleton_F0.5": 0.7391304347826086,
+          "matched_F0.5": 0.6591105776146287,
+          "multi_match_F0.5": 0.6784942327109347
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.661167044546646,
+            "precision": 0.9218045112781955,
+            "recall": 0.44974321349963314,
+            "singleton_F0.5": 1.0,
+            "matched_F0.5": 0.6397670684127499,
+            "multi_match_F0.5": 0.6638428669088527
+          },
+          "US": {
+            "macro_F0.5": 0.688411414679757,
+            "precision": 0.8458559256390396,
+            "recall": 0.5119549929676512,
+            "singleton_F0.5": 0.7142857142857143,
+            "matched_F0.5": 0.6871359210372098,
+            "multi_match_F0.5": 0.6947408701725188
+          },
+          "S2-": {
+            "macro_F0.5": 0.6359822226706902,
+            "precision": 0.8618677042801557,
+            "recall": 0.5402439024390244,
+            "singleton_F0.5": 0.9016393442622951,
+            "matched_F0.5": 0.599068590741105,
+            "multi_match_F0.5": 0.6882258131454185
+          },
+          "S3-": {
+            "macro_F0.5": 0.5870686952796086,
+            "precision": 0.8825431034482759,
+            "recall": 0.44127155172413796,
+            "singleton_F0.5": 0.8739495798319328,
+            "matched_F0.5": 0.5483186098519962,
+            "multi_match_F0.5": 0.613566340574841
+          }
+        }
+      },
+      "logistic_features": {
+        "threshold": 0.47,
+        "validation": {
+          "macro_F0.5": 0.711541791459784,
+          "precision": 0.9488476672287802,
+          "recall": 0.482837528604119,
+          "singleton_F0.5": 0.9807692307692307,
+          "matched_F0.5": 0.6967740416242446,
+          "multi_match_F0.5": 0.7118955284512005,
+          "candidate_pair_recall": 0.5331807780320366,
+          "entity_complete_coverage": 0.205,
+          "matched_entity_complete_coverage": 0.16139240506329114
+        },
+        "calibration": {
+          "macro_F0.5": 0.6945871733192562,
+          "precision": 0.9421487603305785,
+          "recall": 0.4842820730671198,
+          "singleton_F0.5": 0.9347826086956522,
+          "matched_F0.5": 0.6830054227665159,
+          "multi_match_F0.5": 0.701034277137741
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.6804539154898964,
+            "precision": 0.9422222222222222,
+            "recall": 0.46661775495231106,
+            "singleton_F0.5": 1.0,
+            "matched_F0.5": 0.6602720575208372,
+            "multi_match_F0.5": 0.6886787309231837
+          },
+          "US": {
+            "macro_F0.5": 0.7326147812111843,
+            "precision": 0.9528985507246377,
+            "recall": 0.493202062822316,
+            "singleton_F0.5": 0.9642857142857143,
+            "matched_F0.5": 0.7211943831018763,
+            "multi_match_F0.5": 0.7272576711145985
+          },
+          "S2-": {
+            "macro_F0.5": 0.6474248773886931,
+            "precision": 0.9426681367144433,
+            "recall": 0.5213414634146342,
+            "singleton_F0.5": 0.9590163934426229,
+            "matched_F0.5": 0.6041285619461197,
+            "multi_match_F0.5": 0.6979774514679113
+          },
+          "S3-": {
+            "macro_F0.5": 0.6268341912215751,
+            "precision": 0.9552752293577982,
+            "recall": 0.4488146551724138,
+            "singleton_F0.5": 0.9663865546218487,
+            "matched_F0.5": 0.5809695700585416,
+            "multi_match_F0.5": 0.633315594193421
+          }
+        }
+      },
+      "cheap_logistic": {
+        "threshold": 0.25,
+        "validation": {
+          "macro_F0.5": 0.6906810559310975,
+          "precision": 0.8817991631799164,
+          "recall": 0.48226544622425627,
+          "singleton_F0.5": 0.8846153846153846,
+          "matched_F0.5": 0.6800433079441957,
+          "multi_match_F0.5": 0.6942865449615073,
+          "candidate_pair_recall": 0.5331807780320366,
+          "entity_complete_coverage": 0.205,
+          "matched_entity_complete_coverage": 0.16139240506329114
+        },
+        "calibration": {
+          "macro_F0.5": 0.6704131436515004,
+          "precision": 0.8713991769547325,
+          "recall": 0.4797507788161994,
+          "singleton_F0.5": 0.8043478260869565,
+          "matched_F0.5": 0.6639550772028305,
+          "multi_match_F0.5": 0.6788662038531215
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.6804171896047794,
+            "precision": 0.8950953678474114,
+            "recall": 0.48202494497432136,
+            "singleton_F0.5": 0.9166666666666666,
+            "matched_F0.5": 0.6654961700008707,
+            "multi_match_F0.5": 0.6927171693041361
+          },
+          "US": {
+            "macro_F0.5": 0.6976384418301453,
+            "precision": 0.8735144312393888,
+            "recall": 0.48241912798874825,
+            "singleton_F0.5": 0.8571428571428571,
+            "matched_F0.5": 0.6897755481175468,
+            "multi_match_F0.5": 0.6953249729665717
+          },
+          "S2-": {
+            "macro_F0.5": 0.6394446145865318,
+            "precision": 0.865024630541872,
+            "recall": 0.5353658536585366,
+            "singleton_F0.5": 0.9098360655737705,
+            "matched_F0.5": 0.6018731373422913,
+            "multi_match_F0.5": 0.6934671635058111
+          },
+          "S3-": {
+            "macro_F0.5": 0.6018007011048808,
+            "precision": 0.9007803790412486,
+            "recall": 0.4353448275862069,
+            "singleton_F0.5": 0.9159663865546218,
+            "matched_F0.5": 0.5593651544890813,
+            "multi_match_F0.5": 0.6099086450369835
+          }
+        }
+      }
+    }
+  },
+  "address_v2": {
+    "sample_s1": 5000,
+    "split_sizes": {
+      "train": 3000,
+      "calibration": 1000,
+      "validation": 1000
+    },
+    "final_k_per_source": 100,
+    "ranking": "char",
+    "blocking": {
+      "method": "exact name OR two rare name tokens OR rare name token plus address clue; token-overlap cap",
+      "k_per_source": 100,
+      "scanned_targets": 10320219,
+      "scored_pairs": 8210592,
+      "sample_s1": 5000,
+      "seconds": 240.5140286249998,
+      "label_independent": true,
+      "address_path": true
+    },
+    "selected_by_calibration": "logistic_features",
+    "runtime_seconds": 120.27376129100048,
+    "results": {
+      "char_cosine": {
+        "threshold": 0.695,
+        "validation": {
+          "macro_F0.5": 0.7168436040964884,
+          "precision": 0.7934304097527938,
+          "recall": 0.6701945080091534,
+          "singleton_F0.5": 0.40384615384615385,
+          "matched_F0.5": 0.7340122406081102,
+          "multi_match_F0.5": 0.7490245441875848,
+          "candidate_pair_recall": 0.937929061784897,
+          "entity_complete_coverage": 0.826,
+          "matched_entity_complete_coverage": 0.8164556962025317
+        },
+        "calibration": {
+          "macro_F0.5": 0.7094833632219588,
+          "precision": 0.7820598006644518,
+          "recall": 0.6666666666666666,
+          "singleton_F0.5": 0.5652173913043478,
+          "matched_F0.5": 0.7164395840901036,
+          "multi_match_F0.5": 0.736734291100195
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.6606755720401029,
+            "precision": 0.7026378896882494,
+            "recall": 0.6449009537784299,
+            "singleton_F0.5": 0.2916666666666667,
+            "matched_F0.5": 0.6839813976426357,
+            "multi_match_F0.5": 0.6979188076316022
+          },
+          "US": {
+            "macro_F0.5": 0.7549172365642397,
+            "precision": 0.8601645123384254,
+            "recall": 0.6863572433192686,
+            "singleton_F0.5": 0.5,
+            "matched_F0.5": 0.7674835792117726,
+            "multi_match_F0.5": 0.7828403025816367
+          },
+          "S2-": {
+            "macro_F0.5": 0.6728097483892164,
+            "precision": 0.774300932090546,
+            "recall": 0.7091463414634146,
+            "singleton_F0.5": 0.6065573770491803,
+            "matched_F0.5": 0.6820156587576496,
+            "multi_match_F0.5": 0.7708071158291872
+          },
+          "S3-": {
+            "macro_F0.5": 0.6822841681838479,
+            "precision": 0.8132322536181944,
+            "recall": 0.6357758620689655,
+            "singleton_F0.5": 0.7310924369747899,
+            "matched_F0.5": 0.6756914508329716,
+            "multi_match_F0.5": 0.7247418831728654
+          }
+        }
+      },
+      "logistic_features": {
+        "threshold": 0.5899999999999999,
+        "validation": {
+          "macro_F0.5": 0.8219210105627737,
+          "precision": 0.9174511223750905,
+          "recall": 0.7248283752860412,
+          "singleton_F0.5": 0.75,
+          "matched_F0.5": 0.8258660448974404,
+          "multi_match_F0.5": 0.8338742102991406,
+          "candidate_pair_recall": 0.937929061784897,
+          "entity_complete_coverage": 0.826,
+          "matched_entity_complete_coverage": 0.8164556962025317
+        },
+        "calibration": {
+          "macro_F0.5": 0.8080257583699918,
+          "precision": 0.903886925795053,
+          "recall": 0.724440668365902,
+          "singleton_F0.5": 0.7608695652173914,
+          "matched_F0.5": 0.8102995370754631,
+          "multi_match_F0.5": 0.825439486500423
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.7609928919421785,
+            "precision": 0.8616636528028933,
+            "recall": 0.6991929567131328,
+            "singleton_F0.5": 0.5833333333333334,
+            "matched_F0.5": 0.7722134956437897,
+            "multi_match_F0.5": 0.7876674879598942
+          },
+          "US": {
+            "macro_F0.5": 0.8632212788894857,
+            "precision": 0.9547101449275363,
+            "recall": 0.7412095639943741,
+            "singleton_F0.5": 0.8928571428571429,
+            "matched_F0.5": 0.8617603560178407,
+            "multi_match_F0.5": 0.8644483779778196
+          },
+          "S2-": {
+            "macro_F0.5": 0.760920860121131,
+            "precision": 0.9059180576631259,
+            "recall": 0.7280487804878049,
+            "singleton_F0.5": 0.819672131147541,
+            "matched_F0.5": 0.7527572438737256,
+            "multi_match_F0.5": 0.8133846038967166
+          },
+          "S3-": {
+            "macro_F0.5": 0.7894309634423026,
+            "precision": 0.9279778393351801,
+            "recall": 0.7219827586206896,
+            "singleton_F0.5": 0.9243697478991597,
+            "matched_F0.5": 0.7712042717846793,
+            "multi_match_F0.5": 0.8019759075318573
+          }
+        }
+      },
+      "cheap_logistic": {
+        "threshold": 0.34,
+        "validation": {
+          "macro_F0.5": 0.7789525261653245,
+          "precision": 0.8264435695538058,
+          "recall": 0.7205377574370709,
+          "singleton_F0.5": 0.6538461538461539,
+          "matched_F0.5": 0.7858149010182748,
+          "multi_match_F0.5": 0.794089089041618,
+          "candidate_pair_recall": 0.937929061784897,
+          "entity_complete_coverage": 0.826,
+          "matched_entity_complete_coverage": 0.8164556962025317
+        },
+        "calibration": {
+          "macro_F0.5": 0.7702490817231208,
+          "precision": 0.8078291814946619,
+          "recall": 0.7071651090342679,
+          "singleton_F0.5": 0.6304347826086957,
+          "matched_F0.5": 0.7769906517013845,
+          "multi_match_F0.5": 0.791415181438887
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.7276881902439186,
+            "precision": 0.7514836795252225,
+            "recall": 0.7432134996331622,
+            "singleton_F0.5": 0.4166666666666667,
+            "matched_F0.5": 0.747331654890903,
+            "multi_match_F0.5": 0.7560603658697282
+          },
+          "US": {
+            "macro_F0.5": 0.8137021766892304,
+            "precision": 0.8858823529411765,
+            "recall": 0.7060478199718706,
+            "singleton_F0.5": 0.8571428571428571,
+            "matched_F0.5": 0.8115607346950375,
+            "multi_match_F0.5": 0.8192520198880647
+          },
+          "S2-": {
+            "macro_F0.5": 0.7344114580595152,
+            "precision": 0.7982005141388174,
+            "recall": 0.7573170731707317,
+            "singleton_F0.5": 0.7131147540983607,
+            "matched_F0.5": 0.7373706811611792,
+            "multi_match_F0.5": 0.8034207191166007
+          },
+          "S3-": {
+            "macro_F0.5": 0.7381413657930195,
+            "precision": 0.8558981233243967,
+            "recall": 0.6880387931034483,
+            "singleton_F0.5": 0.8487394957983193,
+            "matched_F0.5": 0.723202458334869,
+            "multi_match_F0.5": 0.7657811532305846
+          }
+        }
+      }
+    }
+  },
+  "capped100_k20": {
+    "sample_s1": 5000,
+    "split_sizes": {
+      "train": 3000,
+      "calibration": 1000,
+      "validation": 1000
+    },
+    "final_k_per_source": 20,
+    "ranking": "blocking",
+    "blocking": {
+      "method": "structured name and address blocks",
+      "k_per_source": 100,
+      "scanned_targets": 10320219,
+      "scored_pairs": 2592604,
+      "sample_s1": 5000,
+      "seconds": 251.9769478749995,
+      "label_independent": true,
+      "address_path": true,
+      "exact_core_address": false,
+      "max_key_frequency": 100
+    },
+    "selected_by_calibration": "logistic_features",
+    "runtime_seconds": 42.31344516599984,
+    "results": {
+      "char_cosine": {
+        "threshold": 0.6599999999999999,
+        "validation": {
+          "macro_F0.5": 0.7231655081759132,
+          "precision": 0.7644916540212443,
+          "recall": 0.7205377574370709,
+          "singleton_F0.5": 0.3076923076923077,
+          "matched_F0.5": 0.7459551774007522,
+          "multi_match_F0.5": 0.7556799719955205,
+          "candidate_pair_recall": 0.9061784897025171,
+          "entity_complete_coverage": 0.777,
+          "matched_entity_complete_coverage": 0.7647679324894515
+        },
+        "calibration": {
+          "macro_F0.5": 0.7062908813621617,
+          "precision": 0.7420787681374,
+          "recall": 0.7097139620504106,
+          "singleton_F0.5": 0.45652173913043476,
+          "matched_F0.5": 0.7183342571930417,
+          "multi_match_F0.5": 0.7371672078619711
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.6638310350450202,
+            "precision": 0.6702127659574468,
+            "recall": 0.6933235509904622,
+            "singleton_F0.5": 0.20833333333333334,
+            "matched_F0.5": 0.6925993109426004,
+            "multi_match_F0.5": 0.7022584826668657
+          },
+          "US": {
+            "macro_F0.5": 0.7633855201639681,
+            "precision": 0.8350132625994695,
+            "recall": 0.7379278012189404,
+            "singleton_F0.5": 0.39285714285714285,
+            "matched_F0.5": 0.7816510035523329,
+            "multi_match_F0.5": 0.7910280228784061
+          },
+          "S2-": {
+            "macro_F0.5": 0.69726303776607,
+            "precision": 0.7399527186761229,
+            "recall": 0.7634146341463415,
+            "singleton_F0.5": 0.5737704918032787,
+            "matched_F0.5": 0.7144225942665945,
+            "multi_match_F0.5": 0.7930795947262523
+          },
+          "S3-": {
+            "macro_F0.5": 0.690022431509574,
+            "precision": 0.7903930131004366,
+            "recall": 0.6826508620689655,
+            "singleton_F0.5": 0.6554621848739496,
+            "matched_F0.5": 0.6946906146533187,
+            "multi_match_F0.5": 0.745238057545171
+          }
+        }
+      },
+      "logistic_features": {
+        "threshold": 0.5399999999999996,
+        "validation": {
+          "macro_F0.5": 0.8189518387408812,
+          "precision": 0.9100395825836632,
+          "recall": 0.7233981693363845,
+          "singleton_F0.5": 0.75,
+          "matched_F0.5": 0.8227340071106342,
+          "multi_match_F0.5": 0.830534309487113,
+          "candidate_pair_recall": 0.9061784897025171,
+          "entity_complete_coverage": 0.777,
+          "matched_entity_complete_coverage": 0.7647679324894515
+        },
+        "calibration": {
+          "macro_F0.5": 0.7958346673961185,
+          "precision": 0.8936547323644097,
+          "recall": 0.7139620504106485,
+          "singleton_F0.5": 0.6956521739130435,
+          "matched_F0.5": 0.8006652698072522,
+          "multi_match_F0.5": 0.8142961306573118
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.7610265458113663,
+            "precision": 0.8540734109221128,
+            "recall": 0.6999266324284666,
+            "singleton_F0.5": 0.5833333333333334,
+            "matched_F0.5": 0.7722492750205052,
+            "multi_match_F0.5": 0.7877058952004361
+          },
+          "US": {
+            "macro_F0.5": 0.8582166346192771,
+            "precision": 0.9476534296028881,
+            "recall": 0.7383966244725738,
+            "singleton_F0.5": 0.8928571428571429,
+            "matched_F0.5": 0.856509003931495,
+            "multi_match_F0.5": 0.8588731107160545
+          },
+          "S2-": {
+            "macro_F0.5": 0.7632030003450283,
+            "precision": 0.8955223880597015,
+            "recall": 0.7317073170731707,
+            "singleton_F0.5": 0.819672131147541,
+            "matched_F0.5": 0.7553564924203054,
+            "multi_match_F0.5": 0.8219594405546812
+          },
+          "S3-": {
+            "macro_F0.5": 0.7794958451179853,
+            "precision": 0.9235580264072273,
+            "recall": 0.7160560344827587,
+            "singleton_F0.5": 0.8991596638655462,
+            "matched_F0.5": 0.7633324008149662,
+            "multi_match_F0.5": 0.7962324236063687
+          }
+        }
+      },
+      "cheap_logistic": {
+        "threshold": 0.4,
+        "validation": {
+          "macro_F0.5": 0.7749301854858403,
+          "precision": 0.8405647382920111,
+          "recall": 0.6982265446224256,
+          "singleton_F0.5": 0.7115384615384616,
+          "matched_F0.5": 0.7784073686559496,
+          "multi_match_F0.5": 0.785525191099606,
+          "candidate_pair_recall": 0.9061784897025171,
+          "entity_complete_coverage": 0.777,
+          "matched_entity_complete_coverage": 0.7647679324894515
+        },
+        "calibration": {
+          "macro_F0.5": 0.7587634599532884,
+          "precision": 0.823790047716428,
+          "recall": 0.6845086377796659,
+          "singleton_F0.5": 0.6304347826086957,
+          "matched_F0.5": 0.7649512158839502,
+          "multi_match_F0.5": 0.7794151664757801
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.7308874824798585,
+            "precision": 0.7674961119751167,
+            "recall": 0.7241379310344828,
+            "singleton_F0.5": 0.4583333333333333,
+            "matched_F0.5": 0.7481014287417442,
+            "multi_match_F0.5": 0.7559898962252632
+          },
+          "US": {
+            "macro_F0.5": 0.8047846351744586,
+            "precision": 0.8986402966625463,
+            "recall": 0.6816690107829348,
+            "singleton_F0.5": 0.9285714285714286,
+            "matched_F0.5": 0.7986824693027772,
+            "multi_match_F0.5": 0.8050681712594513
+          },
+          "S2-": {
+            "macro_F0.5": 0.7301336905558571,
+            "precision": 0.8152393796358732,
+            "recall": 0.7371951219512195,
+            "singleton_F0.5": 0.7540983606557377,
+            "matched_F0.5": 0.7268037477857142,
+            "multi_match_F0.5": 0.7965603331575335
+          },
+          "S3-": {
+            "macro_F0.5": 0.7234723437330981,
+            "precision": 0.8669950738916257,
+            "recall": 0.6637931034482759,
+            "singleton_F0.5": 0.8487394957983193,
+            "matched_F0.5": 0.7065520360194076,
+            "multi_match_F0.5": 0.7507002107483306
+          }
+        }
+      }
+    }
+  },
+  "capped10_k20": {
+    "sample_s1": 5000,
+    "split_sizes": {
+      "train": 3000,
+      "calibration": 1000,
+      "validation": 1000
+    },
+    "final_k_per_source": 20,
+    "ranking": "blocking",
+    "blocking": {
+      "method": "structured name and address blocks",
+      "k_per_source": 100,
+      "scanned_targets": 10320219,
+      "scored_pairs": 608840,
+      "sample_s1": 5000,
+      "seconds": 255.0005698750001,
+      "label_independent": true,
+      "address_path": true,
+      "exact_core_address": false,
+      "max_key_frequency": 10
+    },
+    "selected_by_calibration": "logistic_features",
+    "runtime_seconds": 28.672106375000112,
+    "results": {
+      "char_cosine": {
+        "threshold": 0.6599999999999999,
+        "validation": {
+          "macro_F0.5": 0.7356785503322822,
+          "precision": 0.7763197136892335,
+          "recall": 0.7445652173913043,
+          "singleton_F0.5": 0.3269230769230769,
+          "matched_F0.5": 0.7580997366374285,
+          "multi_match_F0.5": 0.7703183398355395,
+          "candidate_pair_recall": 0.937929061784897,
+          "entity_complete_coverage": 0.83,
+          "matched_entity_complete_coverage": 0.820675105485232
+        },
+        "calibration": {
+          "macro_F0.5": 0.7215348774221686,
+          "precision": 0.7558849171752398,
+          "recall": 0.7366185216652507,
+          "singleton_F0.5": 0.5434782608695652,
+          "matched_F0.5": 0.7301204165850824,
+          "multi_match_F0.5": 0.7485293107556129
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.6677549072804658,
+            "precision": 0.6842485549132948,
+            "recall": 0.6947909024211298,
+            "singleton_F0.5": 0.25,
+            "matched_F0.5": 0.6941394277402848,
+            "multi_match_F0.5": 0.7056393367562422
+          },
+          "US": {
+            "macro_F0.5": 0.7817207513271376,
+            "precision": 0.8410360589131539,
+            "recall": 0.7763713080168776,
+            "singleton_F0.5": 0.39285714285714285,
+            "matched_F0.5": 0.8008900841390388,
+            "multi_match_F0.5": 0.8131152876674488
+          },
+          "S2-": {
+            "macro_F0.5": 0.7079354139920533,
+            "precision": 0.7545939537640782,
+            "recall": 0.776219512195122,
+            "singleton_F0.5": 0.5737704918032787,
+            "matched_F0.5": 0.7265779202642977,
+            "multi_match_F0.5": 0.7970155590028235
+          },
+          "S3-": {
+            "macro_F0.5": 0.71894743484015,
+            "precision": 0.7983193277310925,
+            "recall": 0.7165948275862069,
+            "singleton_F0.5": 0.6722689075630253,
+            "matched_F0.5": 0.7252524799547673,
+            "multi_match_F0.5": 0.7668499806322353
+          }
+        }
+      },
+      "logistic_features": {
+        "threshold": 0.5899999999999999,
+        "validation": {
+          "macro_F0.5": 0.821902805806414,
+          "precision": 0.9103232533889468,
+          "recall": 0.7491418764302059,
+          "singleton_F0.5": 0.7115384615384616,
+          "matched_F0.5": 0.8279565462092976,
+          "multi_match_F0.5": 0.8377282481934992,
+          "candidate_pair_recall": 0.937929061784897,
+          "entity_complete_coverage": 0.83,
+          "matched_entity_complete_coverage": 0.820675105485232
+        },
+        "calibration": {
+          "macro_F0.5": 0.8126301649485235,
+          "precision": 0.8969178082191781,
+          "recall": 0.7417162276975361,
+          "singleton_F0.5": 0.7391304347826086,
+          "matched_F0.5": 0.8161741770948883,
+          "multi_match_F0.5": 0.8306802007008283
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.7564237709562153,
+            "precision": 0.8577777777777778,
+            "recall": 0.7079970652971387,
+            "singleton_F0.5": 0.625,
+            "matched_F0.5": 0.7647242196481868,
+            "multi_match_F0.5": 0.782453010902467
+          },
+          "US": {
+            "macro_F0.5": 0.8662879233894346,
+            "precision": 0.9440639269406392,
+            "recall": 0.7754336615096109,
+            "singleton_F0.5": 0.7857142857142857,
+            "matched_F0.5": 0.8702598632748293,
+            "multi_match_F0.5": 0.8743028911860699
+          },
+          "S2-": {
+            "macro_F0.5": 0.7710774575441758,
+            "precision": 0.8994126284875184,
+            "recall": 0.7469512195121951,
+            "singleton_F0.5": 0.8114754098360656,
+            "matched_F0.5": 0.7654640746516809,
+            "multi_match_F0.5": 0.8323816254730607
+          },
+          "S3-": {
+            "macro_F0.5": 0.799322382894794,
+            "precision": 0.9201320132013201,
+            "recall": 0.7510775862068966,
+            "singleton_F0.5": 0.907563025210084,
+            "matched_F0.5": 0.7847019102097548,
+            "multi_match_F0.5": 0.8204495134813666
+          }
+        }
+      },
+      "cheap_logistic": {
+        "threshold": 0.4,
+        "validation": {
+          "macro_F0.5": 0.7836595081667533,
+          "precision": 0.8267963602133668,
+          "recall": 0.7537185354691075,
+          "singleton_F0.5": 0.5961538461538461,
+          "matched_F0.5": 0.7939446288678832,
+          "multi_match_F0.5": 0.8056508557152484,
+          "candidate_pair_recall": 0.937929061784897,
+          "entity_complete_coverage": 0.83,
+          "matched_entity_complete_coverage": 0.820675105485232
+        },
+        "calibration": {
+          "macro_F0.5": 0.7875659271718436,
+          "precision": 0.8256909547738693,
+          "recall": 0.7445482866043613,
+          "singleton_F0.5": 0.6304347826086957,
+          "matched_F0.5": 0.7951424813122049,
+          "multi_match_F0.5": 0.8121150923993342
+        },
+        "slices": {
+          "India": {
+            "macro_F0.5": 0.7207476958001765,
+            "precision": 0.7536764705882353,
+            "recall": 0.752017608217168,
+            "singleton_F0.5": 0.375,
+            "matched_F0.5": 0.7425843923770297,
+            "multi_match_F0.5": 0.7569728640949042
+          },
+          "US": {
+            "macro_F0.5": 0.8263044279588623,
+            "precision": 0.8812260536398467,
+            "recall": 0.7548054383497421,
+            "singleton_F0.5": 0.7857142857142857,
+            "matched_F0.5": 0.8283053504638767,
+            "multi_match_F0.5": 0.8378602183948779
+          },
+          "S2-": {
+            "macro_F0.5": 0.7464100713249959,
+            "precision": 0.7998753117206983,
+            "recall": 0.7823170731707317,
+            "singleton_F0.5": 0.7049180327868853,
+            "matched_F0.5": 0.7521754798690158,
+            "multi_match_F0.5": 0.8204396252501821
+          },
+          "S3-": {
+            "macro_F0.5": 0.7532468805334376,
+            "precision": 0.8540745420088439,
+            "recall": 0.728448275862069,
+            "singleton_F0.5": 0.7983193277310925,
+            "matched_F0.5": 0.7471587747258088,
+            "multi_match_F0.5": 0.7897476304632289
+          }
+        }
+      }
+    }
+  },
+  "address_tree_v1": {
+    "model": "HistGradientBoostingClassifier, shallow 200 iterations, depth 4",
+    "base_run": "artifacts/experiments/address_v2",
+    "threshold": 0.6449999999999999,
+    "calibration": {
+      "macro_F0.5": 0.8707797950890636,
+      "precision": 0.9547511312217195,
+      "recall": 0.7768337581421694,
+      "singleton_F0.5": 0.8695652173913043,
+      "matched_F0.5": 0.8708383596321421,
+      "multi_match_F0.5": 0.8817174303795299
+    },
+    "validation": {
+      "macro_F0.5": 0.8744149893659737,
+      "precision": 0.9613338063142959,
+      "recall": 0.7751716247139588,
+      "singleton_F0.5": 0.9038461538461539,
+      "matched_F0.5": 0.8728006216940651,
+      "multi_match_F0.5": 0.8838563809890968
+    },
+    "slices": {
+      "India": {
+        "macro_F0.5": 0.8338146707311611,
+        "precision": 0.9319227230910764,
+        "recall": 0.7432134996331622,
+        "singleton_F0.5": 0.8333333333333334,
+        "matched_F0.5": 0.833845070987866,
+        "multi_match_F0.5": 0.8480069500246397
+      },
+      "US": {
+        "macro_F0.5": 0.9019360107224572,
+        "precision": 0.9797921478060047,
+        "recall": 0.7955930614158462,
+        "singleton_F0.5": 0.9642857142857143,
+        "matched_F0.5": 0.8988624337862404,
+        "multi_match_F0.5": 0.9075773128795972
+      },
+      "S2-": {
+        "macro_F0.5": 0.8232236981490414,
+        "precision": 0.9648854961832061,
+        "recall": 0.7707317073170732,
+        "singleton_F0.5": 0.9426229508196722,
+        "matched_F0.5": 0.8066329136093866,
+        "multi_match_F0.5": 0.8687515916137979
+      },
+      "S3-": {
+        "macro_F0.5": 0.8427787318090377,
+        "precision": 0.9582504970178927,
+        "recall": 0.7790948275862069,
+        "singleton_F0.5": 0.957983193277311,
+        "matched_F0.5": 0.8272176297491916,
+        "multi_match_F0.5": 0.8568910126527874
+      }
+    },
+    "retained_by_calibration": true,
+    "runtime_seconds": 8.766350666999642,
+    "notes": "No internal random pair holdout: early_stopping=False. S1 train/calibration/validation reused unchanged. Tree-only comparison; no neural training.",
+    "country_transfer_logistic": {
+      "India_to_US": {
+        "threshold": 0.4,
+        "train_s1": 1225,
+        "calibration_s1": 394,
+        "validation_s1": 596,
+        "metrics": {
+          "macro_F0.5": 0.8381542916155316,
+          "precision": 0.9185140802875974,
+          "recall": 0.7187060478199718,
+          "singleton_F0.5": 0.8928571428571429,
+          "matched_F0.5": 0.8354576721881283,
+          "multi_match_F0.5": 0.8383924444913212
+        }
+      },
+      "US_to_India": {
+        "threshold": 0.5449999999999995,
+        "train_s1": 1775,
+        "calibration_s1": 606,
+        "validation_s1": 404,
+        "metrics": {
+          "macro_F0.5": 0.7266948729271867,
+          "precision": 0.8016460905349794,
+          "recall": 0.714600146735143,
+          "singleton_F0.5": 0.5,
+          "matched_F0.5": 0.7410124438489035,
+          "multi_match_F0.5": 0.760283288751805
+        }
+      }
+    }
+  },
+  "capped100_k20_tree": {
+    "model": "HistGradientBoostingClassifier, shallow 200 iterations, depth 4",
+    "base_run": "artifacts/experiments/capped100_k20",
+    "threshold": 0.455,
+    "calibration": {
+      "macro_F0.5": 0.8213747987351074,
+      "precision": 0.9029264810849393,
+      "recall": 0.7165109034267912,
+      "singleton_F0.5": 0.782608695652174,
+      "matched_F0.5": 0.8232440238313495,
+      "multi_match_F0.5": 0.8372596893499239
+    },
+    "validation": {
+      "macro_F0.5": 0.8276609669531577,
+      "precision": 0.9077306733167082,
+      "recall": 0.7288329519450801,
+      "singleton_F0.5": 0.7692307692307693,
+      "matched_F0.5": 0.8308659988957359,
+      "multi_match_F0.5": 0.8387733565373506
+    },
+    "slices": {
+      "India": {
+        "macro_F0.5": 0.7880199564969804,
+        "precision": 0.8547968885047537,
+        "recall": 0.7256052824651504,
+        "singleton_F0.5": 0.625,
+        "matched_F0.5": 0.7983159537494213,
+        "multi_match_F0.5": 0.8059570067047968
+      },
+      "US": {
+        "macro_F0.5": 0.854531719007345,
+        "precision": 0.9448484848484848,
+        "recall": 0.7308954524144398,
+        "singleton_F0.5": 0.8928571428571429,
+        "matched_F0.5": 0.8526424375499607,
+        "multi_match_F0.5": 0.8604873525013209
+      },
+      "S2-": {
+        "macro_F0.5": 0.782895415900674,
+        "precision": 0.9005196733481812,
+        "recall": 0.7396341463414634,
+        "singleton_F0.5": 0.8524590163934426,
+        "matched_F0.5": 0.7732294030759386,
+        "multi_match_F0.5": 0.8284417768171678
+      },
+      "S3-": {
+        "macro_F0.5": 0.7863541876139826,
+        "precision": 0.9143835616438356,
+        "recall": 0.7192887931034483,
+        "singleton_F0.5": 0.9327731092436975,
+        "matched_F0.5": 0.7665768304358486,
+        "multi_match_F0.5": 0.8005087489533363
+      }
+    },
+    "retained_by_calibration": true,
+    "runtime_seconds": 3.5411250420002034,
+    "cheap_only": true,
+    "feature_indices": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "notes": "No internal random pair holdout: early_stopping=False. S1 train/calibration/validation reused unchanged. Tree-only comparison; no neural training.",
+    "country_transfer_logistic": {}
+  },
+  "capped10_k20_tree": {
+    "model": "HistGradientBoostingClassifier, shallow 200 iterations, depth 4",
+    "base_run": "artifacts/experiments/capped10_k20",
+    "threshold": 0.5599999999999994,
+    "calibration": {
+      "macro_F0.5": 0.8395260042978687,
+      "precision": 0.9294755877034359,
+      "recall": 0.7278391390540924,
+      "singleton_F0.5": 0.8043478260869565,
+      "matched_F0.5": 0.8412222267273256,
+      "multi_match_F0.5": 0.8536496927192032
+    },
+    "validation": {
+      "macro_F0.5": 0.8437751450600567,
+      "precision": 0.9388054232319532,
+      "recall": 0.732837528604119,
+      "singleton_F0.5": 0.8461538461538461,
+      "matched_F0.5": 0.84364466778487,
+      "multi_match_F0.5": 0.8537653175278728
+    },
+    "slices": {
+      "India": {
+        "macro_F0.5": 0.8045313106023139,
+        "precision": 0.9028944911297853,
+        "recall": 0.7094644167278064,
+        "singleton_F0.5": 0.75,
+        "matched_F0.5": 0.807975393377197,
+        "multi_match_F0.5": 0.8174123808380456
+      },
+      "US": {
+        "macro_F0.5": 0.8703766704307414,
+        "precision": 0.9620024125452352,
+        "recall": 0.7477730895452415,
+        "singleton_F0.5": 0.9285714285714286,
+        "matched_F0.5": 0.8675079147477498,
+        "multi_match_F0.5": 0.8778194102160949
+      },
+      "S2-": {
+        "macro_F0.5": 0.7923550561056703,
+        "precision": 0.933076923076923,
+        "recall": 0.7396341463414634,
+        "singleton_F0.5": 0.8934426229508197,
+        "matched_F0.5": 0.778308719938121,
+        "multi_match_F0.5": 0.8362410842056751
+      },
+      "S3-": {
+        "macro_F0.5": 0.8040303776180652,
+        "precision": 0.9440167949615116,
+        "recall": 0.7268318965517241,
+        "singleton_F0.5": 0.9663865546218487,
+        "matched_F0.5": 0.7821003151169865,
+        "multi_match_F0.5": 0.8136684472925759
+      }
+    },
+    "retained_by_calibration": true,
+    "runtime_seconds": 2.342745042000388,
+    "cheap_only": true,
+    "feature_indices": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "notes": "No internal random pair holdout: early_stopping=False. S1 train/calibration/validation reused unchanged. Tree-only comparison; no neural training.",
+    "country_transfer_logistic": {}
+  },
+  "capped10_fuzzy_tree": {
+    "model": "shallow HistGradientBoosting + 6 RapidFuzz edit features",
+    "base_run": "artifacts/experiments/capped10_k20",
+    "threshold": 0.6399999999999999,
+    "calibration": {
+      "macro_F0.5": 0.8867636992844729,
+      "precision": 0.9667590027700831,
+      "recall": 0.7907108467856131,
+      "singleton_F0.5": 0.9130434782608695,
+      "matched_F0.5": 0.8854965401304747,
+      "multi_match_F0.5": 0.8984860541273728
+    },
+    "validation": {
+      "macro_F0.5": 0.8902261365415952,
+      "precision": 0.9654208871812784,
+      "recall": 0.7906178489702517,
+      "singleton_F0.5": 0.9230769230769231,
+      "matched_F0.5": 0.88842419466413,
+      "multi_match_F0.5": 0.8950175264184923
+    },
+    "slices": {
+      "India": {
+        "macro_F0.5": 0.859718976878244,
+        "precision": 0.9467401285583104,
+        "recall": 0.7564196625091709,
+        "singleton_F0.5": 0.875,
+        "matched_F0.5": 0.8587538596284489,
+        "multi_match_F0.5": 0.8665844946419633
+      },
+      "US": {
+        "macro_F0.5": 0.910905486380511,
+        "precision": 0.9768883878241262,
+        "recall": 0.8124706985466479,
+        "singleton_F0.5": 0.9642857142857143,
+        "matched_F0.5": 0.9082740666950434,
+        "multi_match_F0.5": 0.9138311586594107
+      },
+      "S2-": {
+        "macro_F0.5": 0.8469485608560686,
+        "precision": 0.9647577092511013,
+        "recall": 0.801219512195122,
+        "singleton_F0.5": 0.9672131147540983,
+        "matched_F0.5": 0.8302375408383469,
+        "multi_match_F0.5": 0.8876700544877891
+      },
+      "S3-": {
+        "macro_F0.5": 0.8518334302280937,
+        "precision": 0.966022651565623,
+        "recall": 0.78125,
+        "singleton_F0.5": 0.9663865546218487,
+        "matched_F0.5": 0.8363603067288237,
+        "multi_match_F0.5": 0.8638025513365711
+      }
+    },
+    "retained_by_calibration": true,
+    "runtime_seconds": 7.810291999999208,
+    "feature_seconds": 3.6470072909996816,
+    "feature_pairs": 124815,
+    "pairs_per_feature_second": 34223.95132250666,
+    "fuzzy_features": [
+      "name_levenshtein",
+      "address_levenshtein",
+      "name_token_sort",
+      "address_token_sort",
+      "name_weighted_ratio",
+      "address_weighted_ratio"
+    ],
+    "cheap_only": true,
+    "uses_fuzzy": true
+  }
+}

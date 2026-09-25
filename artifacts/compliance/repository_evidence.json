@@ -1,0 +1,20 @@
+[
+  {
+    "model": "BAAI/bge-reranker-v2-m3",
+    "source": "https://huggingface.co/api/models/BAAI/bge-reranker-v2-m3",
+    "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+    "license": "apache-2.0",
+    "parameter_count": 567755777,
+    "method": "Hugging Face repository safetensors metadata",
+    "verified_at": "2026-09-25T14:59:26.197862+00:00"
+  },
+  {
+    "model": "BAAI/bge-m3",
+    "source": "https://huggingface.co/api/models/BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "license": "mit",
+    "parameter_count": null,
+    "method": "Hugging Face repository safetensors metadata",
+    "verified_at": "2026-09-25T14:59:26.473467+00:00"
+  }
+]

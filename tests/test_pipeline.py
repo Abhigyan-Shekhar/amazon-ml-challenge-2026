@@ -96,3 +96,97 @@ def test_duplicate_output_match_rejected():
     matching = pd.DataFrame([('001','["002", "002"]')],columns=['source1_entity_id','matched_entity_ids'])
     with pytest.raises(ValueError,match='Duplicate match'):
         validate_submission(sources,candidates,matching)
+
+def test_official_format_and_validator(tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('official', 'utils/validate_submission.py')
+    official = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(official)
+    sources = {'s1': records([('S1-1','Acme','1 Main','US'),('S1-2','Other','2 Main','France')]), 's2': records([('S2-1','Acme','1 Main','US')]), 's3': records([])}
+    for i in (1,2,3):
+        sources[f's{i}'][['entity_id','business_name','business_address','country']].to_csv(tmp_path/f'test_source{i}.tsv',sep='\t',index=False)
+    candidates = pd.DataFrame([('S1-1','S2-1')], columns=['source1_entity_id','target_entity_id'])
+    write_submission(tmp_path/'out',sources,candidates,{'S1-1':{'S2-1'}})
+    assert (tmp_path/'out/candidate_pairs.tsv').read_text() == 'source1_entity_id\tcandidate_entity_ids\nS1-1\tS2-1\nS1-2\t\n'
+    errors,warnings=official.validate(str(tmp_path/'out/matching_results.tsv'),str(tmp_path/'out/candidate_pairs.tsv'),str(tmp_path),check_ids=True)
+    assert errors == warnings == []
+
+
+def test_blocking_keys_open_country():
+    from src.blocking.keys import query_keys,target_keys
+    q=query_keys('ecole paris limited','12 rue de paris',{'ecole':1,'paris':2,'limited':100})
+    t=target_keys('paris ecole ltd','12 rue de paris')
+    assert q&t
+
+
+def test_sample_experiment_respects_requested_k(tmp_path):
+    candidates=tmp_path/'candidates';candidates.mkdir()
+    sample=[{'entity_id':f'S1-{i}','business_name':f'Acme {i}','business_address':f'{i} Main Street','country':'India' if i%2 else 'US','matches':[f'S2-{i}-0'] if i%4 else []} for i in range(20)]
+    (candidates/'sample_s1.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in sample))
+    with (candidates/'pairs.jsonl').open('w') as f:
+        for q in sample:
+            i=q['entity_id'].split('-')[1]
+            for j in range(3):
+                f.write(json.dumps({'source1_entity_id':q['entity_id'],'target_entity_id':f'S2-{i}-{j}','target_name':q['business_name'] if j==0 else f'Other Store {j}','target_address':q['business_address'] if j==0 else f'{j} Side Road','target_country':q['country'],'target_source':'s2','blocking_score':1-j*.2,'blocking_rank':j+1})+'\n')
+    (candidates/'benchmark.json').write_text('{}')
+    run=tmp_path/'run'
+    subprocess.run([sys.executable,'scripts/12_sample_experiment.py','--candidates',str(candidates),'--output',str(run),'--ranking','blocking','--k','1'],check=True,capture_output=True,text=True)
+    report=json.loads((run/'validation.json').read_text())
+    assert report['final_k_per_source']==1
+    final=pd.read_csv(run/'candidate_pairs_internal.tsv',sep='\t')
+    assert final.groupby('source1_entity_id').size().max()==1
+
+
+def test_full_streaming_fallback_matches_frozen_classifier(tmp_path):
+    import joblib
+    import numpy as np
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+    test_dir=tmp_path/'test';test_dir.mkdir();model_dir=tmp_path/'model';model_dir.mkdir()
+    data={'s1':records([('S1-1','Acme LLC','12 Main Road','US'),('S1-2','Unique','99 Long Road','France')]),'s2':records([('S2-1','Acme Inc','12 Main Road','US')]),'s3':records([])}
+    for i in (1,2,3):data[f's{i}'][['entity_id','business_name','business_address','country']].to_csv(test_dir/f'test_source{i}.tsv',sep='\t',index=False)
+    rng=np.random.default_rng(2026);x=rng.random((50,10));y=(x[:,1]>.5).astype(int)
+    model=make_pipeline(StandardScaler(),LogisticRegression()).fit(x,y)
+    joblib.dump({'k_per_source':1,'cheap_model':model},model_dir/'lexical_model.joblib')
+    report={'ranking':'blocking','blocking':{'exact_core_address':True},'results':{'cheap_logistic':{'threshold':.5,'validation':{'macro_F0.5':0},'slices':{}}},'git_commit':'fixture'}
+    (model_dir/'validation.json').write_text(json.dumps(report))
+    output=tmp_path/'out'
+    subprocess.run([sys.executable,'scripts/15_full_exact_baseline.py','--test-dir',str(test_dir),'--model-dir',str(model_dir),'--output',str(output)],check=True,capture_output=True,text=True)
+    final=pd.read_csv(output/'matching_results.tsv',sep='\t',keep_default_na=False)
+    # Features for this known pair, in the documented frozen order.
+    features=np.array([[1/3,1,0,1,1,0,1,1,1,0]])
+    expected='S2-1' if model.predict_proba(features)[0,1]>=.5 else ''
+    assert final.iloc[0].matched_entity_ids==expected
+    assert final.iloc[1].matched_entity_ids==''
+    candidates=pd.read_csv(output/'candidate_pairs.tsv',sep='\t',keep_default_na=False)
+    assert candidates.iloc[0].candidate_entity_ids=='S2-1'
+    from sklearn.ensemble import HistGradientBoostingClassifier
+    tree_dir=tmp_path/'tree';tree_dir.mkdir()
+    tree=HistGradientBoostingClassifier(max_iter=3,min_samples_leaf=2,early_stopping=False,random_state=2026).fit(x,y)
+    joblib.dump({'model':tree,'threshold':.5},tree_dir/'model.joblib')
+    (tree_dir/'validation.json').write_text(json.dumps({'cheap_only':True,'validation':{'macro_F0.5':0},'slices':{}}))
+    report['blocking']['max_key_frequency']=10
+    (model_dir/'validation.json').write_text(json.dumps(report))
+    structured=tmp_path/'structured'
+    subprocess.run([sys.executable,'scripts/18_full_structured.py','--test-dir',str(test_dir),'--model-dir',str(model_dir),'--tree-dir',str(tree_dir),'--max-key-frequency','10','--output',str(structured)],check=True,capture_output=True,text=True)
+    actual=pd.read_csv(structured/'matching_results.tsv',sep='\t',keep_default_na=False)
+    assert actual.iloc[0].matched_entity_ids==('S2-1' if tree.predict_proba(features)[0,1]>=.5 else '')
+    assert actual.iloc[1].matched_entity_ids==''
+    from src.features.fuzzy import fuzzy_features
+    augmented=np.column_stack([x,rng.random((len(x),6))])
+    fuzzy_tree=HistGradientBoostingClassifier(max_iter=3,min_samples_leaf=2,early_stopping=False,random_state=2026).fit(augmented,y)
+    joblib.dump({'model':fuzzy_tree,'threshold':.5,'uses_fuzzy':True},tree_dir/'model.joblib')
+    fuzzy_out=tmp_path/'fuzzy'
+    subprocess.run([sys.executable,'scripts/18_full_structured.py','--test-dir',str(test_dir),'--model-dir',str(model_dir),'--tree-dir',str(tree_dir),'--max-key-frequency','10','--output',str(fuzzy_out)],check=True,capture_output=True,text=True)
+    augmented_expected=np.column_stack([features,[fuzzy_features('acme llc','12 main road','acme inc','12 main road')]])
+    actual=pd.read_csv(fuzzy_out/'matching_results.tsv',sep='\t',keep_default_na=False)
+    assert actual.iloc[0].matched_entity_ids==('S2-1' if fuzzy_tree.predict_proba(augmented_expected)[0,1]>=.5 else '')
+    assert actual.iloc[1].matched_entity_ids==''
+
+
+def test_fuzzy_features_blank_address_not_exact_match():
+    from src.features.fuzzy import fuzzy_features
+    values=fuzzy_features('acme','', 'acme','')
+    assert values[0]==values[2]==values[4]==1
+    assert values[1]==values[3]==values[5]==0

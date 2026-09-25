@@ -10,6 +10,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument('--external-gpu', choices=['yes','no','unknown'], default='unknown')
+parser.add_argument('--config', type=Path, help='Count the exact train/test inputs from a config')
 args = parser.parse_args()
 report = {"platform": platform.platform(), "cpu_cores": os.cpu_count(), "cpu_name": platform.processor(), "disk": shutil.disk_usage(ROOT)._asdict(), "ram_bytes": None, "cuda_available": False, "gpus": [], "external_gpu_available": "unknown", "mode": "C until external GPU access is confirmed", "errors": []}
 try:
@@ -32,7 +33,11 @@ if args.external_gpu == 'yes':
         report['mode'] = 'B'
 elif args.external_gpu == 'no':
     report['external_gpu_available'] = False
-files = list((ROOT / "data").rglob("*.tsv"))
+if args.config:
+    config = json.loads(args.config.read_text())
+    files = [args.config.resolve().parent / p for partition in ('train','test') for p in config.get(partition,{}).values()]
+else:
+    files = list((ROOT / "data").rglob("*.tsv"))
 report["dataset"] = {"tsv_count": len(files), "total_bytes": sum(p.stat().st_size for p in files)}
 report["runtime_estimates"] = {"lexical": "Pending actual record count and sample benchmark", "bge_m3": "Not launched; requires verified model, sample throughput and budget gate", "reranker": "Not launched; requires candidate count, verified model, sample throughput and budget gate", "fine_tuning": "No CPU training planned; external CUDA GPU and successful pretrained validation required"}
 (ROOT / "artifacts").mkdir(exist_ok=True)

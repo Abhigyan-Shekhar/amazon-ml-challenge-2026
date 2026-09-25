@@ -22,3 +22,6 @@ artifacts/experiments/
 *.safetensors
 *.pt
 *.pth
+
+artifacts/gpu_jobs/
+*.joblib

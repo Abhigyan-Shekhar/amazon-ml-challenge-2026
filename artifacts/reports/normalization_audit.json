@@ -1,0 +1,6 @@
+{
+  "sample_s1": 5000,
+  "names_with_combining_marks": 0,
+  "addresses_with_combining_marks": 0,
+  "observation": "Current frozen normalization v1 replaces Unicode combining marks with spaces along with punctuation. Raw fields remain intact. Evaluate a mark-preserving normalization v2 on a separate checkpoint before replacing frozen pipelines."
+}

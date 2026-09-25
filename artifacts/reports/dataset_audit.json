@@ -1,0 +1,310 @@
+{
+  "partitions": {
+    "train": {
+      "source1": {
+        "rows": 2206821,
+        "schema": [
+          "entity_id",
+          "business_name",
+          "business_address",
+          "country"
+        ],
+        "missing": {},
+        "duplicate_ids": 0,
+        "malformed_rows": 0,
+        "countries": {
+          "US": 1323633,
+          "India": 883188
+        },
+        "name_length": {
+          "count": 2206821,
+          "mean": 24.03440333402664,
+          "min": 3,
+          "p25": 18,
+          "p50": 24,
+          "p75": 30,
+          "p95": 37,
+          "max": 105
+        },
+        "address_length": {
+          "count": 2206821,
+          "mean": 52.06621289175697,
+          "min": 11,
+          "p25": 33,
+          "p50": 41,
+          "p75": 70,
+          "p95": 103,
+          "max": 256
+        },
+        "bytes": 210069713
+      },
+      "source2": {
+        "rows": 5034616,
+        "schema": [
+          "entity_id",
+          "business_name",
+          "business_address",
+          "country"
+        ],
+        "missing": {
+          "business_address": 168967
+        },
+        "duplicate_ids": 0,
+        "malformed_rows": 0,
+        "countries": {
+          "India": 2017799,
+          "US": 3016817
+        },
+        "name_length": {
+          "count": 5034616,
+          "mean": 25.103574930044317,
+          "min": 2,
+          "p25": 19,
+          "p50": 25,
+          "p75": 31,
+          "p95": 40,
+          "max": 104
+        },
+        "address_length": {
+          "count": 5034616,
+          "mean": 46.22590858965212,
+          "min": 0,
+          "p25": 30,
+          "p50": 37,
+          "p75": 61,
+          "p95": 96,
+          "max": 249
+        },
+        "bytes": 489301488
+      },
+      "source3": {
+        "rows": 5285603,
+        "schema": [
+          "entity_id",
+          "business_name",
+          "business_address",
+          "country"
+        ],
+        "missing": {
+          "business_address": 175916
+        },
+        "duplicate_ids": 0,
+        "malformed_rows": 0,
+        "countries": {
+          "US": 3170056,
+          "India": 2115547
+        },
+        "name_length": {
+          "count": 5285603,
+          "mean": 25.202143823514554,
+          "min": 2,
+          "p25": 18,
+          "p50": 25,
+          "p75": 31,
+          "p95": 42,
+          "max": 123
+        },
+        "address_length": {
+          "count": 5285603,
+          "mean": 46.71443731207206,
+          "min": 0,
+          "p25": 35,
+          "p50": 42,
+          "p75": 54,
+          "p95": 91,
+          "max": 240
+        },
+        "bytes": 503705637
+      }
+    },
+    "test": {
+      "source1": {
+        "rows": 1732544,
+        "schema": [
+          "entity_id",
+          "business_name",
+          "business_address",
+          "country"
+        ],
+        "missing": {},
+        "duplicate_ids": 0,
+        "malformed_rows": 0,
+        "countries": {
+          "US": 663106,
+          "France": 259452,
+          "India": 809986
+        },
+        "name_length": {
+          "count": 1732544,
+          "mean": 23.83642608788002,
+          "min": 3,
+          "p25": 18,
+          "p50": 24,
+          "p75": 29,
+          "p95": 36,
+          "max": 92
+        },
+        "address_length": {
+          "count": 1732544,
+          "mean": 57.213179578700455,
+          "min": 11,
+          "p25": 36,
+          "p50": 50,
+          "p75": 74,
+          "p95": 105,
+          "max": 268
+        },
+        "bytes": 175022086
+      },
+      "source2": {
+        "rows": 4887273,
+        "schema": [
+          "entity_id",
+          "business_name",
+          "business_address",
+          "country"
+        ],
+        "missing": {
+          "business_address": 129408
+        },
+        "duplicate_ids": 0,
+        "malformed_rows": 0,
+        "countries": {
+          "India": 2312565,
+          "France": 703378,
+          "US": 1871330
+        },
+        "name_length": {
+          "count": 4887273,
+          "mean": 25.703646184692364,
+          "min": 2,
+          "p25": 19,
+          "p50": 25,
+          "p75": 32,
+          "p95": 42,
+          "max": 102
+        },
+        "address_length": {
+          "count": 4887273,
+          "mean": 50.413405594490015,
+          "min": 0,
+          "p25": 32,
+          "p50": 43,
+          "p75": 67,
+          "p95": 99,
+          "max": 269
+        },
+        "bytes": 509456422
+      },
+      "source3": {
+        "rows": 5082316,
+        "schema": [
+          "entity_id",
+          "business_name",
+          "business_address",
+          "country"
+        ],
+        "missing": {
+          "business_address": 136098
+        },
+        "duplicate_ids": 0,
+        "malformed_rows": 0,
+        "countries": {
+          "India": 2405000,
+          "France": 731615,
+          "US": 1945701
+        },
+        "name_length": {
+          "count": 5082316,
+          "mean": 25.65519440349636,
+          "min": 2,
+          "p25": 19,
+          "p50": 25,
+          "p75": 32,
+          "p95": 42,
+          "max": 103
+        },
+        "address_length": {
+          "count": 5082316,
+          "mean": 48.74047087981149,
+          "min": 0,
+          "p25": 35,
+          "p50": 43,
+          "p75": 59,
+          "p95": 94,
+          "max": 267
+        },
+        "bytes": 506002772
+      }
+    }
+  },
+  "seed": 2026,
+  "labels": {
+    "rows": 2206821,
+    "match_count_distribution": {
+      "0": 123247,
+      "1": 119157,
+      "2": 375212,
+      "3": 530841,
+      "4": 484115,
+      "5": 321957,
+      "6": 164868,
+      "7": 63968,
+      "8": 18680,
+      "9": 4205,
+      "10": 534,
+      "11": 37
+    },
+    "zero": 123247,
+    "one": 119157,
+    "many": 1964417,
+    "country_match_histograms": {
+      "US": {
+        "5": 192618,
+        "3": 318876,
+        "6": 98406,
+        "4": 290446,
+        "2": 225285,
+        "7": 38299,
+        "0": 73896,
+        "1": 71689,
+        "8": 11217,
+        "9": 2534,
+        "10": 347,
+        "11": 20
+      },
+      "India": {
+        "4": 193669,
+        "3": 211965,
+        "2": 149927,
+        "5": 129339,
+        "1": 47468,
+        "7": 25669,
+        "0": 49351,
+        "6": 66462,
+        "8": 7463,
+        "9": 1671,
+        "11": 17,
+        "10": 187
+      }
+    },
+    "source_link_counts": {
+      "source2": 3693619,
+      "source3": 3944746
+    },
+    "duplicate_s1_rows": 0,
+    "missing_s1_count": 0,
+    "unknown_s1_count": 0,
+    "invalid_target_count": 0,
+    "duplicate_match_rows": 0,
+    "shared_target_count": 0,
+    "max_s1_per_target": 1,
+    "shared_target_examples": []
+  },
+  "runtime_seconds": 57.30339429199921,
+  "sample": {
+    "method": "uniform reservoir of training S1, seed 2026",
+    "size": 5000,
+    "labels_complete": true
+  }
+}

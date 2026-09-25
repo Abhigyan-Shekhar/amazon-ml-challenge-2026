@@ -1,0 +1,23 @@
+{
+  "packages": [
+    {
+      "package": "scikit-learn",
+      "version": "1.8.0",
+      "license_expression": "BSD-3-Clause",
+      "license": null,
+      "source": "installed distribution metadata"
+    },
+    {
+      "package": "rapidfuzz",
+      "version": "3.14.6",
+      "license_expression": "MIT",
+      "license": null,
+      "source": "installed distribution metadata"
+    }
+  ],
+  "selected_model": "HistGradientBoostingClassifier, token + RapidFuzz features",
+  "uses_pretrained_weights": false,
+  "fitted_tree_count": 200,
+  "numeric_split_thresholds_and_leaf_values_plus_base_logit": 5505,
+  "verification_stage": "selected CPU model, before final packaging"
+}

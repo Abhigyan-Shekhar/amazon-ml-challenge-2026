@@ -1,0 +1,8 @@
+{
+  "pairs": 100000,
+  "feature_plus_model_seconds": 1.7215364579997186,
+  "pairs_per_second": 58087.64579763338,
+  "projected_45m_pairs_seconds": 774.6914060998733,
+  "includes": "all 16 features and batched model scoring; excludes retrieval and output serialization",
+  "benchmark_model_sha256": "9877acaef2826ea2fdbe1f47843ab5a52ee1b94e14b37925f174f12a8dc37b5d"
+}

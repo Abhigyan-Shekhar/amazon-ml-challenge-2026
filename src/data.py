@@ -5,6 +5,16 @@ from .normalize import prepare
 
 FIELDS = ["entity_id", "business_name", "business_address", "country"]
 
+def parse_id_list(value):
+    """Official comma-separated IDs; accept legacy JSON lists for old fixtures."""
+    if not value:
+        return []
+    values = json.loads(value) if value.startswith('[') else value.split(',')
+    if not isinstance(values, list) or any(not isinstance(v, str) or not v or v != v.strip() for v in values):
+        raise ValueError('Invalid ID list')
+    return values
+
+
 def read_records(path):
     frame = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
     if not set(FIELDS) <= set(frame):
@@ -23,15 +33,15 @@ def read_sources(paths):
 def read_truth(path, sources):
     frame = pd.read_csv(path, sep="\t", dtype=str, keep_default_na=False)
     if not {"source1_entity_id", "matched_entity_ids"} <= set(frame):
-        raise ValueError("Canonical labels require source1_entity_id and matched_entity_ids (JSON list or blank)")
+        raise ValueError("Labels require source1_entity_id and matched_entity_ids (comma-separated IDs or blank)")
     if frame.source1_entity_id.duplicated().any():
         raise ValueError("Duplicate S1 label rows")
     truth = {}
     allowed = set(sources["s2"].entity_id) | set(sources["s3"].entity_id)
     for row in frame.itertuples():
-        values = json.loads(row.matched_entity_ids) if row.matched_entity_ids else []
+        values = parse_id_list(row.matched_entity_ids)
         if not isinstance(values, list) or any(not isinstance(x, str) for x in values):
-            raise ValueError("matched_entity_ids must be a JSON list of strings")
+            raise ValueError("matched_entity_ids must contain string IDs")
         if len(values) != len(set(values)) or set(values) - allowed:
             raise ValueError("Duplicate or invalid ground-truth target IDs")
         truth[row.source1_entity_id] = set(values)

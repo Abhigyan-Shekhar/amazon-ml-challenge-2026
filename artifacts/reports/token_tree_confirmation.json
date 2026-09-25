@@ -1,0 +1,70 @@
+{
+  "status": "fresh disjoint confirmation, no fitting or threshold tuning",
+  "s1_count": 2000,
+  "singleton_count": 131,
+  "model": "artifacts/experiments/capped10_k20_tree/model.joblib",
+  "model_sha256": "8fbc2eabe6469fe24633ab36509c355280599732a6442521ff88a34133e6e56d",
+  "threshold": 0.5599999999999994,
+  "metrics": {
+    "macro_F0.5": 0.8395273996376396,
+    "precision": 0.931542622645029,
+    "recall": 0.7345197823209295,
+    "singleton_F0.5": 0.8549618320610687,
+    "matched_F0.5": 0.8384455854870407,
+    "multi_match_F0.5": 0.8547810258133085,
+    "candidate_pair_recall": 0.9223415208118841,
+    "entity_complete_coverage": 0.7945,
+    "matched_entity_complete_coverage": 0.7800963081861958
+  },
+  "slices": {
+    "India": {
+      "macro_F0.5": 0.7986595095373491,
+      "precision": 0.8859030837004406,
+      "recall": 0.7085976039464411,
+      "singleton_F0.5": 0.7636363636363637,
+      "matched_F0.5": 0.8011775134910146,
+      "multi_match_F0.5": 0.8144241728305305
+    },
+    "US": {
+      "macro_F0.5": 0.8679271198768242,
+      "precision": 0.9650598511808476,
+      "recall": 0.753092653370361,
+      "singleton_F0.5": 0.9210526315789473,
+      "matched_F0.5": 0.864269928853852,
+      "multi_match_F0.5": 0.883388415269455
+    },
+    "S2-": {
+      "macro_F0.5": 0.7985409624928776,
+      "precision": 0.9306292645943897,
+      "recall": 0.7430387409200968,
+      "singleton_F0.5": 0.8986486486486487,
+      "matched_F0.5": 0.78115136442826,
+      "multi_match_F0.5": 0.8418431604824989
+    },
+    "S3-": {
+      "macro_F0.5": 0.8023974792427742,
+      "precision": 0.932427469702534,
+      "recall": 0.7264663805436338,
+      "singleton_F0.5": 0.9182156133828996,
+      "matched_F0.5": 0.7843991672360187,
+      "multi_match_F0.5": 0.8385159957280127
+    }
+  },
+  "bootstrap_95pct_interval": [
+    0.8287097239679257,
+    0.8498242122170517
+  ],
+  "retrieval": {
+    "method": "structured name and address blocks",
+    "k_per_source": 20,
+    "scanned_targets": 10320219,
+    "scored_pairs": 306355,
+    "sample_s1": 2000,
+    "seconds": 280.6650522909995,
+    "label_independent": true,
+    "address_path": true,
+    "exact_core_address": false,
+    "max_key_frequency": 10
+  },
+  "seed": 2028
+}

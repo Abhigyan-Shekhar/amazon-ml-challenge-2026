@@ -1,130 +1,161 @@
-# Amazon ML Challenge 2026 — incremental entity resolution
+# Amazon ML Challenge 2026 — business entity resolution
 
-Status: CPU baseline implemented and tested on synthetic fixtures. **No challenge data, official validator, real validation score, or approved submission is available yet.** No neural model has been downloaded or trained. No external business data is used.
+The real datasets have been audited. The selected CPU fuzzy-feature tree scores **0.890226 macro F0.5** on the development holdout and **0.875554 on a fresh, disjoint 2,000-S1 confirmation set**, without retuning. Its full-test run is in progress. A separate exact-match fallback (**0.690681** locally) is already packaged and officially validated. **Do not attribute the stronger model’s scores to the fallback files.** No leaderboard submission has been made.
 
-The current machine has 10 CPU cores, 16 GiB RAM, no detected CUDA/MPS device, and approximately 20 GiB free disk. Mode B is selected because free-tier Kaggle/Colab access is available; actual GPU allocation must be checked when starting a job. See `artifacts/compute_report.json`.
+This repository snapshot contains the completed audit, experiments, reproducible scripts, reports, tests, official validator adapter, exact fallback package workflow, and GPU validation package. The stronger fuzzy full-test inference is intentionally left as a resumable local job; its output must be officially validated and packaged before any submission decision.
 
-## What's done
+## Completed
 
-- [x] Compute detection and Mode B selection: local CPU plus free-tier Kaggle/Colab GPU access.
-- [x] Conservative normalization with raw-field preservation and open-set country strings.
-- [x] Canonical TSV loaders and EDA reporting, ready for the actual dataset.
-- [x] Exact per-S1 macro F0.5 evaluator, singleton handling, and grouped calibration/validation split.
-- [x] CPU character TF-IDF candidate retrieval against S2 and S3 independently.
-- [x] Threshold search, candidate recall/complete coverage, and validation slice reporting.
-- [x] Provisional submission generation with internal ID, duplicate, containment, and round-trip checks.
-- [x] Per-run manifests, input hashes, experiment logging, and an initialized submission log.
-- [x] Portable GPU pair export, reranker scoring with compliance/runtime gates, and score import/evaluation scripts. **GPU execution is still unverified.**
-- [x] Local correctness suite: **15 tests passing**, including synthetic end-to-end EDA and baseline execution. These are not competition performance results.
+- [x] Audited all seven supplied TSVs, with input SHA-256 hashes and the official validator retained in `utils/`.
+- [x] Confirmed schema, missingness, ID uniqueness, label coverage, 0/1/many distribution, and S2/S3 ownership.
+- [x] Implemented and tested exact per-S1 macro F0.5, including singleton behavior.
+- [x] Measured local compute and global character-retrieval feasibility before scaling.
+- [x] Retrieved candidates for 5,000 uniformly sampled S1s against **all 10,320,219 training targets**.
+- [x] Kept 3,000 S1s for classifier training, 1,000 for threshold calibration, and 1,000 for held-out reporting. No random pair split.
+- [x] Measured name blocking, added address blocking after a recall bottleneck, and compared cosine, logistic features, and a shallow boosted-tree matcher.
+- [x] Ran country-transfer sanity checks, singleton analysis, and a fresh 2,000-S1 confirmation; retained separate model checkpoints.
+- [x] Measured common-key pruning and fast edit features to make the stronger model feasible on CPU. The final candidate pool is capped at 20/source and excludes keys shared by more than 10 S1s.
+- [x] Adapted output to official comma-separated lists, including one candidate row per S1.
+- [x] Prepared a Kaggle/Colab reranker validation package with **227,362 fixed candidate pairs**, compliance checks, and runtime gates.
+- [x] Passed **20 tests**, including the supplied official validator on fixtures and a candidate-cap regression test.
 
-## What's left
+Full-test package: `outputs/exact_core_v1_submission.zip` (**255 MB**). Official validator passed with **zero errors and zero warnings**, including ID checks. Both TSVs contain **1,732,544 rows**; the matcher scored **37,420,131 candidates** and selected **3,879,980 links**. Runtime: **822.94 seconds**, peak measured retrieval RSS: **4.73 GiB**.
 
-The next required step is to obtain the challenge datasets, official schema/sample submission, rules, and validator.
+## Dataset findings
 
-- [ ] Inspect all real train/test files; adapt the provisional input/output formats to the official contract.
-- [ ] Run real-data EDA: missingness, countries, singleton/multi-match prevalence, and shared S2/S3 targets.
-- [ ] Benchmark retrieval on a representative sample, then measure the baseline on grouped validation.
-- [ ] Run the official submission validator and produce the first valid baseline submission package.
-- [ ] Verify neural model license and parameter evidence, execute a sample GPU benchmark, and evaluate the pretrained reranker if feasible.
-- [ ] Add BM25/RRF or dense retrieval only if measured candidate recall/coverage warrants it.
-- [ ] Implement grouped supervised training and hard-negative fine-tuning only after a successful pretrained baseline; preserve checkpoints and limit initial mining to one round.
-- [ ] Evaluate optional pair features, calibration, and global consistency only where data supports them and validation improves.
-- [ ] Complete actual country-transfer checks, singleton analysis, measured ablations, and methodology conclusions.
-- [ ] Freeze the strongest validated configuration, recheck compliance, implement final selected-model test inference, and package officially validated outputs.
-- [ ] Obtain explicit human approval for any leaderboard upload and enforce the five-per-challenge-day budget.
+| Partition | S1 | S2 | S3 | Countries |
+|---|---:|---:|---:|---|
+| Train | 2,206,821 | 5,034,616 | 5,285,603 | India, US |
+| Test | 1,732,544 | 4,887,273 | 5,082,316 | India, US, France |
 
-No real validation score, trained neural checkpoint, or final submission is available yet. Fine-tuning and additional retrieval/model branches remain deliberately deferred until measurements justify them.
+Training S1 distribution: **123,247 singletons (5.58%)**, **119,157 one-match entities (5.40%)**, and **1,964,417 multi-match entities (89.02%)**. Labels contain 7,638,365 links. Every target in the ground truth belongs to exactly one S1; no global assignment constraint has been applied yet.
 
-## Run locally
+No duplicate IDs, malformed records, missing/unknown S1 labels, duplicate truth matches, or invalid target references were found. Names and countries are populated. Missing addresses: train S2 **168,967**, train S3 **175,916**, test S2 **129,408**, test S3 **136,098**. No France validation is claimed.
 
-Use Python 3.11+ in an isolated environment. The tested local runtime was Python 3.14; the exact installed package snapshot is in `artifacts/environment_versions.json`. GPU environments have separate dependencies.
+See [full audit](artifacts/reports/dataset_audit.json) and [input hashes](artifacts/reports/input_manifest.json). Raw data remains outside Git; `config.json` points to the supplied Downloads paths.
+
+## Measured experiments
+
+All scores below use the same 1,000 held-out S1s, including 52 singletons. Thresholds and model retention use the separate calibration groups. Precision and recall are diagnostic micro link metrics. K is the **effective recorded cap**, per target source.
+
+| Retrieval / matcher | K | Candidate link recall | Macro F0.5 |
+|---|---:|---:|---:|
+| Name/structured blocks → character cosine | 50 | 0.7580 | 0.6910 |
+| Same candidates → logistic lexical features | 50 | 0.7580 | 0.7719 |
+| Add address blocks → character cosine | 100 | 0.9379 | 0.7168 |
+| Add address blocks → logistic lexical features | 100 | 0.9379 | 0.8219 |
+| Add address blocks → shallow boosted trees | 100 | 0.9379 | **0.8744** |
+| Cap key frequency at 100 + 20/source → token-feature tree | 20 | 0.9062 | 0.8277 |
+| Cap key frequency at 10 + 20/source → token-feature tree | 20 | 0.9379 | 0.8438 |
+| Same pool + 6 RapidFuzz edit features → tree | 20 | 0.9379 | **0.8902** |
+| Exact name-core/address fallback → token-only logistic | 100 | 0.5332 | 0.6907 |
+
+The selected fuzzy-feature tree has **0.9654 precision**, **0.7906 recall**, and **0.9231 singleton F0.5** on the development holdout. It uses scikit-learn HistGradientBoosting with 200 iterations, depth 4, and no internal random pair validation. Its inputs are ten token/numeric/country/length features plus six RapidFuzz edit similarities. It is a CPU model, not a neural reranker.
+
+On a **fresh 2,000-S1 confirmation set** excluded from all prior training, calibration and holdout groups, the unchanged model and threshold score **0.875554 macro F0.5**, **0.9588 precision**, **0.7839 recall**, and **0.8779 singleton F0.5**. Candidate link recall is **0.9223**; all matches are retrieved for **79.45%** of S1s. India and US F0.5 are **0.8359** and **0.9031**. The bootstrap interval is approximately **0.8658–0.8853**, covering sampling uncertainty only, not France/domain-shift risk. See [independent confirmation](artifacts/reports/fuzzy_confirmation.json).
+
+The earlier full-character-feature tree scored 0.8744 on the development holdout but is more expensive to deploy. Country-transfer checks using country-specific logistic training/calibration scored **India → US 0.8382**, **US → India 0.7267**. The latter is a material warning against assuming equal cross-country performance. No France validation is claimed.
+
+Compact measured artifacts: [results CSV](artifacts/reports/results.csv), [experiment/slice summary](artifacts/reports/experiment_summary.json), [singleton analysis](artifacts/reports/singleton_analysis.json). Full run caches, split IDs, score tables and checkpoints are local under `artifacts/experiments/`.
+
+## Why the architecture changed
+
+Local hardware: 10 ARM CPU cores, 16 GiB RAM, no detected CUDA GPU. Free-tier Kaggle/Colab access selects **Mode B**; allocation is not guaranteed.
+
+A 20,000-record sample projects **14.35 GiB for a global target character matrix alone**, excluding text, vocabulary, temporary products and candidate output. A rough linear query projection is **137 hours**. Therefore the original small-data global TF-IDF runner refuses input above 500 MB.
+
+The scalable sample workflow uses label-independent exact-name, rare-name-token-pair, name-plus-address-clue, and rare-address-token-pair blocks. Country is never a hard filter. Character TF-IDF similarities are calculated within the resulting pool. The initial single-token route was stopped after 39 million comparisons per million targets on only 5,000 queries. The name-only matcher used K=50/source; address and exact runs used K=100/source. Adding address blocks raised full-pool sample recall from 75.3% to 93.0%; the held-out slice recall is 93.8%.
+
+The selected full-test run uses a compact hashed S1 blocking-key index, drops keys with more than ten S1s, and keeps 20 candidates per source by token-overlap ranking before batched fuzzy-tree inference. The entire 16-feature matcher benchmarked at approximately **58,088 pairs/second** on 100,000 representative pairs; this excludes retrieval and file serialization. Name/address token document frequencies are fitted without labels on each S1 partition.
+
+The preserved full-test fallback uses a much cheaper exact sorted name-core OR address-token-set index, followed by the same recorded token-overlap cap and frozen token-feature logistic matcher as its validation run. Legal-form removal affects only this auxiliary key; conservative normalized and raw fields remain intact. This fallback trades recall for runtime and is **not recommended for spending a leaderboard slot while the stronger model is available for further work**.
+
+## Reproduce locally
 
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m pytest -q
-python scripts/00_compute.py --external-gpu yes
+python scripts/00_compute.py --external-gpu yes --config config.json
+python scripts/10_stream_eda.py --root /path/to/resources
 ```
 
-Copy `config.example.json` to `config.json` and supply the real input paths once available. Paths inside the config resolve relative to that config file. Then:
+The resource root contains `train/train_source1.tsv`, `train_source2.tsv`, `train_source3.tsv`, `train_ground_truth.tsv` and corresponding files under `test/`. Copy `config.example.json` to ignored `config.json` and replace paths. The official truth field is a comma-separated list or blank; a legacy JSON-list adapter remains for old fixtures.
+
+Measured sample pipeline (use fresh output directories; existing checkpoints are never overwritten):
 
 ```sh
-python scripts/01_eda.py --config config.json
-python scripts/02_baseline.py --config config.json --experiment-id char_v1
+python scripts/11_sample_candidates.py --root /path/to/resources/train --address-path --output artifacts/candidates/new_address
+python scripts/12_sample_experiment.py --candidates artifacts/candidates/new_address --output artifacts/experiments/new_address --k 100
+python scripts/13_meta_experiment.py --run artifacts/experiments/new_address --sample artifacts/candidates/new_address/sample_s1.jsonl --output artifacts/experiments/new_tree
 ```
 
-The runner refuses to reuse an experiment directory. Results, immutable per-run manifest, split IDs, calibration sweeps, singleton score analysis, candidate scores, and provisional test TSVs are stored under `artifacts/experiments/char_v1/`. Experiment summaries append to `artifacts/experiments/results.csv`. Do not treat synthetic test results as competition evidence.
+For portability, the sample is generated by `10_stream_eda.py`. Pass `--sample` to the candidate script when using a nondefault audit directory. Token-frequency cache reuse is guarded by the source-file SHA-256. The current runs all use the hashed supplied inputs.
 
-## Provisional input/output contract
-
-This contract is an adapter boundary, **not a claim about the official format**. Update it after inspecting the actual files/sample submission. Preserve IDs as strings, including leading zeros.
-
-Each source TSV requires `entity_id`, `business_name`, `business_address`, `country`. Additional columns are preserved. Blank text is allowed. Blank/duplicate IDs and cross-source ID collisions stop the pipeline for investigation. If the official data uses scoped IDs, add explicit source disambiguation before proceeding.
-
-Canonical training labels require exactly one row per S1, with columns `source1_entity_id` and `matched_entity_ids`. The latter is a JSON string list or an empty field. Missing S1 label rows are an error; they are never silently converted to singletons. A positive-links-only official label file will need a documented adapter based on its actual completeness guarantee.
-
-Provisional candidate output has one row per `(source1_entity_id, target_entity_id)`. Matching output has one row per S1, with a JSON list of matched IDs or a blank singleton field. Pandas TSV quoting is used. The official separator/list encoding must be confirmed. Only files beneath a successful run are generated; there is no placeholder `outputs/matching_results.tsv` pretending to be a submission.
-
-The internal validator checks full S1 coverage, ID membership, duplicate pairs/matches, candidate containment, and a TSV round-trip. **The official validator has not run because it has not been supplied.**
-
-## Evaluation and baseline
-
-Per-entity score is `1.25 * TP / (0.25 * number_of_true_matches + number_of_predictions)`. Empty truth plus empty predictions scores 1; false matches on a singleton score 0. Macro averaging includes every S1. Diagnostic precision and recall are micro link metrics; they do not select the model.
-
-A seeded GroupShuffleSplit reserves 20% of S1 for held-out reporting. The remaining 80% calibrates the cosine threshold. No random pair split is used. TF-IDF fits unsupervised text within each train/test partition; no labels enter retrieval. A future supervised matcher needs an additional S1 training/calibration separation or out-of-fold training scores. Repeated selection on this holdout can overfit; establish fixed grouped folds before broader experiments.
-
-Normalization uses Unicode NFKC, lowercase, punctuation-to-space, and whitespace collapse; raw fields remain intact. Accents and letters from all scripts are retained. No country filter or India/US dictionary is used.
-
-Character TF-IDF (3–5 grams) retrieves up to 50 nonzero-overlap candidates independently from S2 and S3. Query batches avoid allocating the full dense S1×target matrix. A 300,000-feature cap and batch size are configurable. Large sparse products and Python candidate rows can still consume memory: benchmark a real-data sample before scaling. No-overlap and blank queries may have zero candidates. The matcher receives exactly the candidate pool later exported in the provisional candidate TSV.
-
-Threshold calibration uses the requested coarse/fine sweep plus 0 and an above-1 predict-none option. Ties favor higher thresholds. Reported slices include singletons, matched and multi-match entities, observed countries, and S2/S3. Source slices include source-specific singletons. Pair recall and complete coverage are both measured; matched-only complete coverage avoids inflation from true singletons. Country transfer is currently a **threshold-transfer** check, not neural training: exact normalized `india` and `us` values are used for those two named checks, while all country strings remain usable in the pipeline.
-
-## Portable GPU reranker workflow
-
-Do this only after real-data EDA and the CPU baseline pass. Free GPU availability and duration are not assumed. No full neural operation is launched locally.
-
-1. Export the exact baseline candidate pairs:
+Full fallback reproduction:
 
 ```sh
-python scripts/03_export_gpu_pairs.py --config config.json --partition train --candidates artifacts/experiments/char_v1/train_candidates.tsv --output train_pairs.jsonl
+python scripts/11_sample_candidates.py --root /path/to/resources/train --exact --output artifacts/candidates/new_exact
+python scripts/12_sample_experiment.py --candidates artifacts/candidates/new_exact --output artifacts/experiments/new_exact --ranking blocking --k 100
+python scripts/15_full_exact_baseline.py --test-dir /path/to/resources/test --model-dir artifacts/experiments/new_exact --output outputs/new_exact --budget-seconds 1800
+python utils/validate_submission.py --matching outputs/new_exact/matching_results.tsv --candidate outputs/new_exact/candidate_pairs.tsv --test-dir /path/to/resources/test --check-ids
 ```
 
-2. Upload that file and `scripts/gpu/score_pairs.py` into a private Kaggle/Colab runtime if permitted by the competition's data rules. Enable a CUDA GPU. In that environment:
+The small-data runner `02_baseline.py` is retained for fixtures and small subsets. Do not point it at the multi-million-record dataset.
+
+## Selected CPU model and full-test run
+
+```sh
+python scripts/11_sample_candidates.py --root /path/to/resources/train --address-path --max-key-frequency 10 --output artifacts/candidates/new_capped
+python scripts/12_sample_experiment.py --candidates artifacts/candidates/new_capped --output artifacts/experiments/new_capped --ranking blocking --k 20
+python scripts/13_meta_experiment.py --run artifacts/experiments/new_capped --sample artifacts/candidates/new_capped/sample_s1.jsonl --output artifacts/experiments/new_token_tree --cheap-only
+python scripts/21_fuzzy_experiment.py --run artifacts/experiments/new_capped --candidates artifacts/candidates/new_capped --baseline-tree artifacts/experiments/new_token_tree --output artifacts/experiments/new_fuzzy_tree
+PYTHONHASHSEED=2026 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python scripts/18_full_structured.py --test-dir /path/to/resources/test --model-dir artifacts/experiments/new_capped --tree-dir artifacts/experiments/new_fuzzy_tree --max-key-frequency 10 --output outputs/new_fuzzy --budget-seconds 2400
+python scripts/17_package_baseline.py --run outputs/new_fuzzy --test-dir /path/to/resources/test
+```
+
+`19_confirmation_sample.py` and `20_confirm_frozen.py` produce and evaluate a disjoint confirmation sample. They never recalibrate the frozen threshold. The current selected model is `artifacts/experiments/capped10_fuzzy_tree/model.joblib`, threshold **0.64**. Its checksum is recorded in the confirmation report and pre-inference manifest. Raw data, pair caches, models, and outputs remain ignored by Git.
+
+The intermediate token-only full-test attempt was stopped before prediction output after the measured fuzzy-feature improvement; its checkpoint and progress remain under `outputs/structured_tree_v1/`. It is not a complete submission. The validated exact fallback remains intact.
+
+## Official output contract
+
+`matching_results.tsv`: `source1_entity_id<TAB>matched_entity_ids`.
+
+`candidate_pairs.tsv`: `source1_entity_id<TAB>candidate_entity_ids`.
+
+Each file contains exactly one row per test S1. Lists contain comma-separated S2-/S3- IDs; singleton lists are blank. Final matches must be contained in the exact finalized candidate pool supplied to the matcher. Our pipeline enforces containment even though the provided validator only warns about it. Run the official validator with `--check-ids` for full membership checks.
+
+## GPU validation package
+
+Local directory: `artifacts/gpu_jobs/reranker_address_v2/`. Upload privately to Kaggle/Colab if competition data rules allow it. It contains the fixed pair texts, scoring script, split metadata and instructions. There are no model weights or external business records in the package.
 
 ```sh
 pip install torch transformers huggingface_hub sentencepiece
-python score_pairs.py --pairs train_pairs.jsonl --output-dir reranker_pretrained --budget-seconds 3600
+python score_pairs.py --pairs pairs.jsonl --output-dir reranker_pretrained --budget-seconds 3600
 ```
 
-The script checks live Hugging Face model-card license metadata and safetensors parameter count before loading weights, pins the resolved repository revision, saves the repository README and verification evidence, checks loaded parameter count, then measures a sample spanning text-length quantiles. It projects full inference with a 50% margin and stops if over budget. It also enforces a full-inference time box; interrupted scores remain `.partial` and cannot be imported. Setup/download time is recorded separately. A CUDA OOM or other error must be investigated on the sample; do not repeatedly launch full jobs.
-
-Only MIT/Apache-2.0 repository metadata and <=8B parameters are accepted automatically. Missing/ambiguous metadata stops the job for manual repository review. Read the saved source documentation and actual challenge licensing terms before accepting the experiment. Merge verified evidence into `artifacts/compliance/model_compliance.md`; repeat verification at final freeze. The local compliance file currently approves **no neural model**.
-
-3. Download the complete GPU output directory and evaluate:
+The script checks repository license/count before weights, pins the resolved revision, records compliance evidence, benchmarks text-length quantiles, and gates full inference using a 50% runtime margin. A partial cache cannot be imported. Download the complete output directory and run locally:
 
 ```sh
-python scripts/04_evaluate_gpu_scores.py --config config.json --baseline-run artifacts/experiments/char_v1 --pairs train_pairs.jsonl --cache-dir reranker_pretrained --output artifacts/validation/reranker_pretrained.json
+python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_address_v2 --cache /path/to/reranker_pretrained --output artifacts/validation/pretrained_reranker.json
 ```
 
-The importer verifies the export hash, exact candidate coverage, no duplicates, finite scores, and unchanged training files. It uses the baseline calibration/validation split. It reports a comparison; it does not promote a model automatically. GPU code is syntax-checked but has not been executed on a GPU. Test-score import/final neural packaging should be implemented only after a pretrained validation baseline succeeds.
+[Compliance evidence](artifacts/compliance/model_compliance.md) verifies the reranker's repository metadata. BGE-M3 is still deferred because parameter-count evidence is incomplete. **No neural inference or fine-tuning has run.** Reverify any selected neural model before final packaging.
 
-## Next measured steps and time boxes
+## Remaining work
 
-- Phase 0 (90 min): inspect all supplied TSVs and official rules/validator; confirm schema, label completeness, 0/1/many distribution, countries, missingness, and shared S2/S3 targets. The EDA script writes counts and examples. No global one-to-one rule is implemented.
-- Baseline (2 h): sample benchmark, then run complete lexical retrieval, calibration and held-out evaluation; adapt official output serialization and run the official validator.
-- Retrieval (3 h active debugging): add BM25 + RRF only if candidate recall/complete coverage expose a bottleneck; dense retrieval is deferred until a GPU benchmark supports it.
-- Reranker (2 h integration): use the external script; keep only measured improvement with acceptable singleton/country/source behavior.
-- Fine-tuning (3 h setup cap): **deferred** until the pretrained baseline exists. Use training-group hard negatives and singleton negatives; preserve v1 permanently. One mining round only initially.
-- Optional features (90 min): add supervised calibration only with proper grouped training and measured gain.
-- Final day: reserve at least 2 h for test inference, exact final candidate output, official validation, compliance re-verification, manifest, methodology and packaging.
+- [x] Complete full-file official validation and package the fallback.
+- [ ] Finish and officially validate the selected fuzzy-tree full-test run (`outputs/fuzzy_tree_v1`). The candidate index, runtime/memory gates, and batched CPU scorer are implemented and tested.
+- [ ] Run the supplied GPU pretrained-reranker benchmark and import scores; retain it only if grouped results improve.
+- [ ] Improve remaining retrieval misses (especially altered scripts/names) toward 99% recall; dense/BM25/RRF additions require measured gains and feasible runtime.
+- [ ] After a successful pretrained baseline, prepare supervised hard negatives and at most one mining round; preserve v1/v2 separately.
+- [ ] Consider global consistency only as a measured experiment; the uniqueness audit permits testing it, but does not establish unseen-test behavior.
+- [x] Run fresh disjoint confirmation after model selection, without further tuning.
+- [ ] Test a versioned normalization that preserves Unicode combining marks, particularly for noisy target scripts; never change frozen model preprocessing in place.
+- [ ] Recheck neural compliance if applicable, freeze the selected final pipeline, run full test inference, validate, package, and seek explicit human approval before a leaderboard upload.
 
-Two serious failures in a component trigger a checkpoint and fallback. No unfinished neural or hybrid scaffolding replaces the working lexical route. Actual stage runtime estimates require real record/candidate counts and sample throughput; none are invented here.
+For parallel work, start from the latest pushed commit and use separate output directories. The highest-value independent tasks are GPU reranker benchmarking, retrieval-recall improvements, France/domain-shift validation, and review of the final fuzzy full-test artifacts. Do not overwrite the frozen checkpoints or claim a leaderboard score from the exact fallback.
 
-## Submission control
-
-`artifacts/submissions/submission_log.csv` is initialized and empty. There is no leaderboard API or automatic submission code. Explicit human approval is required for every upload. Before an approved upload, check the challenge calendar-day/timezone and count existing entries; refuse a sixth submission. Record date, ordinal, experiment, local score, description, returned leaderboard score and notes. Challenge timezone is still unknown.
-
-## Methodology and ablations
-
-See `artifacts/methodology.md`. The only implemented matching baseline is lexical cosine; no measured competition ablation is available. BM25/RRF, dense retrieval, supervised features, fine-tuning, mining and global consistency are deferred pending real evidence. A selected production run will be explicitly copied into the requested final manifest/output layout only after official validation; per-run manifests protect intermediate work now.
+`artifacts/submissions/submission_log.csv` remains empty. No submission slot has been used. Never exceed five uploads per challenge calendar day; the challenge timezone and any additional rules still need confirmation. Reserve the final two hours for packaging and validation.

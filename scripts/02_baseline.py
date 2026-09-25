@@ -25,6 +25,8 @@ def run(config_path, output_root, experiment_id):
     config = load_config(config_path)
     run_dir = Path(output_root) / experiment_id
     run_dir.mkdir(parents=True, exist_ok=False)
+    if sum(Path(p).stat().st_size for p in config['train'].values()) > 500_000_000:
+        raise ValueError('Large corpus: use the streaming sample/index workflow; this in-memory baseline is limited to 500 MB input')
     train = read_sources(config['train'])
     truth = read_truth(config['train']['labels'], train)
     calibration, validation = grouped_split(train['s1'].entity_id, config.get('seed', 2026))
@@ -66,7 +68,7 @@ def run(config_path, output_root, experiment_id):
     report = {'experiment_id': experiment_id, 'timestamp': datetime.now(timezone.utc).isoformat(), 'git_commit': commit, 'candidate_method': 'char_tfidf', 'candidate_K': settings['k'], 'threshold': threshold, 'metrics': metrics, 'slices': slices, 'country_transfer': transfer, 'retrieval_timing': timing, 'split': {'calibration': calibration, 'validation': validation}, 'threshold_sweep': sweep, 'input_sha256': hashes, 'hardware': platform.platform(), 'official_validator_status': 'unavailable; internal validator only', 'runtime': time.monotonic()-start}
     (run_dir/'validation.json').write_text(json.dumps(report, indent=2))
     # Freeze before test inference; never reuse an existing experiment directory.
-    manifest = {'experiment_id': experiment_id, 'git_commit': commit, 'candidate_config': settings, 'normalization_config': VERSION, 'retrieval_config': 'char TF-IDF (3,5), separate S2/S3, no country filter, nonzero overlap only', 'RRF_config': None, 'candidate_K': settings['k'], 'model_name': 'char_tfidf_cosine', 'checkpoint_path': None, 'model_parameter_count': 0, 'model_license': 'no pretrained model; sklearn BSD-3-Clause', 'feature_config': ['name + address'], 'threshold': threshold, 'validation_macro_F0.5': metrics['macro_F0.5'], 'validation_slices': slices, 'random_seeds': [config.get('seed', 2026)], 'package_versions': {x: importlib.metadata.version(x) for x in ('numpy', 'pandas', 'scipy', 'scikit-learn')}, 'input_sha256': hashes, 'submission_format_status': 'PROVISIONAL: official schema unconfirmed'}
+    manifest = {'experiment_id': experiment_id, 'git_commit': commit, 'candidate_config': settings, 'normalization_config': VERSION, 'retrieval_config': 'char TF-IDF (3,5), separate S2/S3, no country filter, nonzero overlap only', 'RRF_config': None, 'candidate_K': settings['k'], 'model_name': 'char_tfidf_cosine', 'checkpoint_path': None, 'model_parameter_count': 0, 'model_license': 'no pretrained model; sklearn BSD-3-Clause', 'feature_config': ['name + address'], 'threshold': threshold, 'validation_macro_F0.5': metrics['macro_F0.5'], 'validation_slices': slices, 'random_seeds': [config.get('seed', 2026)], 'package_versions': {x: importlib.metadata.version(x) for x in ('numpy', 'pandas', 'scipy', 'scikit-learn')}, 'input_sha256': hashes, 'submission_format_status': 'Official comma-separated lists; official validator must be run separately'}
     (run_dir/'final_manifest.json').write_text(json.dumps(manifest, indent=2))
     if 'test' in config:
         test = read_sources(config['test'])

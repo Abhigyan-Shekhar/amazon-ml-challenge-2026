@@ -4,8 +4,8 @@
   "cpu_name": "arm",
   "disk": {
     "total": 245107195904,
-    "used": 223399043072,
-    "free": 21708152832
+    "used": 229004398592,
+    "free": 16102797312
   },
   "ram_bytes": 17179869184,
   "cuda_available": false,
@@ -15,13 +15,26 @@
   "errors": [],
   "mps_available": false,
   "dataset": {
-    "tsv_count": 0,
-    "total_bytes": 0
+    "tsv_count": 7,
+    "total_bytes": 2520573701
   },
   "runtime_estimates": {
-    "lexical": "Pending actual record count and sample benchmark",
+    "lexical": "Full exact-core fallback test pipeline completed in 822.94 s, 4.73 GiB peak retrieval RSS. Structured/address full-target sample: 238 s for 5000 S1.",
     "bge_m3": "Not launched; requires verified model, sample throughput and budget gate",
     "reranker": "Not launched; requires candidate count, verified model, sample throughput and budget gate",
-    "fine_tuning": "No CPU training planned; external CUDA GPU and successful pretrained validation required"
+    "fine_tuning": "No CPU training planned; external CUDA GPU and successful pretrained validation required",
+    "char_global": {
+      "sample_rows": 20000,
+      "sample_nnz": 3723556,
+      "average_nnz": 186.1778,
+      "sample_fit_seconds": 1.5914308329993219,
+      "sample_transform_seconds": 0.9695942910002486,
+      "sample_query_100_seconds": 0.043329166999683366,
+      "projected_target_sparse_matrix_gib_lower_bound": 14.353959101723134,
+      "projected_transform_seconds_linear": 500.32127121361475,
+      "projected_full_query_seconds_linear": 493408.2030994899,
+      "caveat": "rough linear projections, exclude strings, vocabulary, temporary products and candidate storage; unseen ngrams change sparsity",
+      "decision": "use selective lexical blocking before within-block char scoring on this 16 GiB CPU host"
+    }
   }
 }

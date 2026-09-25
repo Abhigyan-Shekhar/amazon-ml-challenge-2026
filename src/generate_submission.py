@@ -1,7 +1,8 @@
-"""Provisional canonical TSVs. Official serialization must be confirmed."""
+"""Official comma-separated ID lists, one row per Source-1 entity."""
 import json
 from pathlib import Path
 import pandas as pd
+from .data import parse_id_list
 
 def validate_submission(sources, candidates, matching):
     s1 = set(sources["s1"].entity_id)
@@ -14,7 +15,7 @@ def validate_submission(sources, candidates, matching):
         raise ValueError("Output must cover every S1 exactly once")
     pools = candidates.groupby("source1_entity_id").target_entity_id.agg(set).to_dict()
     for row in matching.itertuples():
-        values = json.loads(row.matched_entity_ids) if row.matched_entity_ids else []
+        values = parse_id_list(row.matched_entity_ids)
         if not isinstance(values, list) or any(not isinstance(v, str) for v in values):
             raise ValueError("Matches must be a JSON string list")
         if len(values) != len(set(values)) or not set(values) <= pools.get(row.source1_entity_id, set()):
@@ -26,10 +27,16 @@ def write_submission(directory, sources, candidates, predicted):
     if set(predicted) - set(sources["s1"].entity_id):
         raise ValueError("Unknown predicted S1")
     pairs = candidates[["source1_entity_id", "target_entity_id"]].copy()
-    matching = pd.DataFrame([(i, json.dumps(sorted(predicted.get(i, [])), ensure_ascii=False) if predicted.get(i) else "") for i in sources["s1"].entity_id], columns=["source1_entity_id", "matched_entity_ids"])
+    matching = pd.DataFrame([(i, ",".join(sorted(predicted.get(i, []))) if predicted.get(i) else "") for i in sources["s1"].entity_id], columns=["source1_entity_id", "matched_entity_ids"])
     validate_submission(sources, pairs, matching)
-    pairs.to_csv(directory / "candidate_pairs.tsv", sep="\t", index=False)
+    pools = pairs.groupby("source1_entity_id").target_entity_id.agg(list).to_dict()
+    official_pairs = pd.DataFrame([(i, ','.join(sorted(pools.get(i, [])))) for i in sources['s1'].entity_id], columns=['source1_entity_id', 'candidate_entity_ids'])
+    official_pairs.to_csv(directory / "candidate_pairs.tsv", sep="\t", index=False)
     matching.to_csv(directory / "matching_results.tsv", sep="\t", index=False)
     # Round-trip catches quoting, tab separation and empty-field errors.
     read = lambda name: pd.read_csv(directory/name, sep="\t", dtype=str, keep_default_na=False)
-    validate_submission(sources, read("candidate_pairs.tsv"), read("matching_results.tsv"))
+    roundtrip = read('candidate_pairs.tsv')
+    expanded = pd.DataFrame([(r.source1_entity_id, t) for r in roundtrip.itertuples() for t in parse_id_list(r.candidate_entity_ids)], columns=['source1_entity_id','target_entity_id'])
+    if roundtrip.source1_entity_id.tolist() != sources['s1'].entity_id.tolist():
+        raise ValueError('Candidate output must cover all S1 entities exactly once')
+    validate_submission(sources, expanded, read("matching_results.tsv"))

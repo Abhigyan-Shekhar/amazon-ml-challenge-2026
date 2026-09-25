@@ -1,0 +1,29 @@
+{
+  "model": "address_tree_v1 (earlier full-character feature model)",
+  "validation_s1": 1000,
+  "singleton_count": 52,
+  "macro_F0.5_bootstrap_95pct_interval": [
+    0.8590711100938111,
+    0.8877686670464454
+  ],
+  "bootstrap_seed": 2026,
+  "caveat": "sampling uncertainty only; not selection bias or France/domain-shift uncertainty",
+  "max_score_quantiles": {
+    "singleton": {
+      "min": 0.0008496343097002,
+      "p25": 0.12357038108406752,
+      "p50": 0.18188029476207596,
+      "p75": 0.38308106793385804,
+      "p95": 0.817214277512276,
+      "max": 0.9588880414599472
+    },
+    "matched": {
+      "min": 0.0289731552865168,
+      "p25": 0.9908850997715042,
+      "p50": 0.9983017988361633,
+      "p75": 0.9994326773582819,
+      "p95": 0.9998050474349816,
+      "max": 0.999868680015464
+    }
+  }
+}
