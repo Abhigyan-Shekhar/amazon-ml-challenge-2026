@@ -208,3 +208,71 @@ def test_fuzzy_features_blank_address_not_exact_match():
     values=fuzzy_features('acme','', 'acme','')
     assert values[0]==values[2]==values[4]==1
     assert values[1]==values[3]==values[5]==0
+
+
+def test_submission_package_format(tmp_path):
+    import zipfile
+    test_dir = tmp_path / 'test_data'
+    test_dir.mkdir()
+    # Write mock test source files
+    (test_dir / 'test_source1.tsv').write_text("entity_id\tbusiness_name\tbusiness_address\tcountry\nS1-1\tAcme\t1 Main\tUS\nS1-2\tOther\t2 Main\tFrance\n")
+    (test_dir / 'test_source2.tsv').write_text("entity_id\tbusiness_name\tbusiness_address\tcountry\nS2-1\tAcme\t1 Main\tUS\n")
+    (test_dir / 'test_source3.tsv').write_text("entity_id\tbusiness_name\tbusiness_address\tcountry\n")
+    
+    run_dir = tmp_path / 'mock_run'
+    run_dir.mkdir()
+    (run_dir / 'matching_results.tsv').write_text("source1_entity_id\tmatched_entity_ids\nS1-1\tS2-1\nS1-2\t\n")
+    (run_dir / 'candidate_pairs.tsv').write_text("source1_entity_id\tcandidate_entity_ids\nS1-1\tS2-1\nS1-2\t\n")
+    (run_dir / 'result.json').write_text(json.dumps({'s1_rows': 2, 'candidates': 1, 'matches': 1}))
+    
+    # Mock model and manifest
+    import joblib
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+    import numpy as np
+    x = np.array([[1.0, 2.0], [3.0, 4.0]])
+    y = np.array([0, 1])
+    pipe = make_pipeline(StandardScaler(), LogisticRegression()).fit(x, y)
+    model_path = run_dir / 'model_checkpoint.joblib'
+    joblib.dump({'cheap_model': pipe}, model_path)
+    
+    manifest = {
+        'model_name': 'cheap_logistic',
+        'checkpoint_path': str(model_path.resolve()),
+        'feature_config': ['f1', 'f2'],
+        'threshold': 0.585
+    }
+    (run_dir / 'final_manifest.json').write_text(json.dumps(manifest))
+    
+    # Run packaging script with team name BlackList
+    cmd = [
+        sys.executable, 'scripts/17_package_baseline.py',
+        '--run', str(run_dir),
+        '--test-dir', str(test_dir),
+        '--team-name', 'BlackList'
+    ]
+    subprocess.run(cmd, check=True, capture_output=True, text=True)
+    
+    archive_path = run_dir.parent / 'BlackList_submission.zip'
+    assert archive_path.is_file(), "Expected BlackList_submission.zip to exist"
+    
+    with zipfile.ZipFile(archive_path, 'r') as z:
+        names = z.namelist()
+        # Verify NO backslashes anywhere in the archive entry paths
+        assert all('\\' not in name for name in names), f"Found backslash in zip paths: {[n for n in names if '\\' in n]}"
+        
+        # Verify top-level structure: strictly output/, code/, Documentation_template.md
+        top_level = {name.split('/')[0] for name in names}
+        assert top_level <= {'output', 'code', 'Documentation_template.md'}, f"Unexpected root entries: {top_level}"
+        
+        # Verify required outputs
+        assert 'output/matching_results.tsv' in names
+        assert 'output/candidate_pairs.tsv' in names
+        assert 'Documentation_template.md' in names
+        
+        # Verify code/business_entity_resolution/ structure
+        assert 'code/business_entity_resolution/README.md' in names
+        assert 'code/business_entity_resolution/requirements.txt' in names
+        assert any(n.startswith('code/business_entity_resolution/src/') for n in names)
+

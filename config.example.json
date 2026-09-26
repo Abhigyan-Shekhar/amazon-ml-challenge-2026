@@ -1,8 +1,18 @@
 {
   "seed": 2026,
-  "candidate_k_per_source": 50,
-  "batch_size": 64,
-  "max_features": 300000,
-  "train": {"s1": "data/raw/train_s1.tsv", "s2": "data/raw/train_s2.tsv", "s3": "data/raw/train_s3.tsv", "labels": "data/raw/train_labels.tsv"},
-  "test": {"s1": "data/raw/test_s1.tsv", "s2": "data/raw/test_s2.tsv", "s3": "data/raw/test_s3.tsv"}
+  "candidate_k_per_source": 20,
+  "max_key_frequency": 10,
+  "threshold": 0.585,
+  "train": {
+    "s1": "dataset/train/train_source1.tsv",
+    "s2": "dataset/train/train_source2.tsv",
+    "s3": "dataset/train/train_source3.tsv",
+    "labels": "dataset/train/train_ground_truth.tsv"
+  },
+  "test": {
+    "s1": "dataset/test/test_source1.tsv",
+    "s2": "dataset/test/test_source2.tsv",
+    "s3": "dataset/test/test_source3.tsv"
+  }
 }
+

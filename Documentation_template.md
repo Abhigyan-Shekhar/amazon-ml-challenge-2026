@@ -124,24 +124,25 @@ The project also demonstrated that entity-resolution performance depends strongl
 
 ### A. Code Artefacts
 
-The complete runnable solution is included under:
+The final submission package is archived as:
 
-`code/business_entity_resolution/`
+`<team_name>_submission.zip` (`BlackList_submission.zip`)
 
-The packaged directory contains:
+Structured strictly according to official challenge specifications:
 
-- `src/` — normalization, feature generation, candidate retrieval, model inference, and supporting pipeline code.
-- `scripts/` — experiment, validation, profiling, and submission-generation scripts.
-- `README.md` — reproduction and execution instructions.
-- `requirements.txt` — Python dependencies required to reproduce the solution.
-- `config.example.json` — example pipeline configuration.
+- `output/` — final TSV outputs:
+  - `matching_results.tsv`
+  - `candidate_pairs.tsv`
+- `Documentation_template.md` — this methodology write-up.
+- `code/business_entity_resolution/` — complete, self-contained runnable pipeline containing:
+  - `src/` — normalization, feature generation, candidate retrieval, model inference, and supporting pipeline code.
+  - `scripts/` — experiment, validation, profiling, and submission-generation scripts.
+  - `README.md` — self-contained reproduction and execution instructions.
+  - `requirements.txt` — Python dependencies required to reproduce the solution.
+  - `config.example.json` — example pipeline configuration.
+  - `model.joblib` — frozen model checkpoint and run provenance.
 
-The final packaging workflow generates:
-
-- `output/matching_results.tsv`
-- `output/candidate_pairs.tsv`
-
-Before packaging, the output files are checked with the official challenge validator, including full ID validation.
+Before packaging, the output files are checked with the official challenge validator, including full ID validation, confirming zero errors and zero warnings.
 
 ### B. Additional Results
 
