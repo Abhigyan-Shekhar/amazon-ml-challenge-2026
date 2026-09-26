@@ -58,7 +58,7 @@ Candidate generation reduces the otherwise impractical Cartesian comparison betw
 
 Candidate-generation quality was measured independently of the classifier. We tracked pair-level candidate recall and analyzed missed labeled matches instead of relying only on final classifier performance.
 
-The retrieval analysis identified multilingual spelling variation, transliteration, diacritics, and low lexical overlap as important causes of missed pairs. A separate Latin-diacritic normalization ablation recovered 72 previously missed true pairs without losing any previously retrieved true pairs in the raw-blocker diagnostic, while increasing candidate volume by approximately 1.74%. This modification was evaluated separately before any decision to include it in the final pipeline.
+The retrieval analysis identified multilingual spelling variation, transliteration, diacritics, and low lexical overlap as important causes of missed pairs. A Latin-diacritic folding ablation increased candidate-pair recall from **93.79% to 94.42%** on the 1,000-S1 development set and from **92.23% to 92.57%** on the disjoint 2,000-S1 confirmation set. However, the corresponding macro F_0.5 gain at the frozen 0.585 threshold was only **0.89215 to 0.89427** on development and **0.87741 to 0.87769** on confirmation. Because the end-to-end gain was small and not convincingly replicated, the folding variant was not promoted to the final pipeline.
 
 ---
 
@@ -73,7 +73,7 @@ The retrieval analysis identified multilingual spelling variation, transliterati
 The selected classifier uses **16 engineered features**, including six RapidFuzz similarity features together with token, numeric, country, length, and missingness information.
 
 **Model type:** scikit-learn HistGradientBoostingClassifier  
-**Current selected threshold:** **0.585**  
+**Selected threshold:** **0.585**  
 **Threshold selection method:** Macro F_0.5 optimization on a grouped validation split, followed by evaluation on a fresh disjoint confirmation split.
 
 Missing address comparisons are represented as missing numerical values while an explicit binary `address_missing` feature informs the classifier that the absence is structural rather than a low similarity score.
@@ -82,7 +82,7 @@ Missing address comparisons are represented as missing numerical values while an
 
 ## 5. Results & Error Analysis
 
-- **Current best validation macro F_0.5:** **0.892146**
+- **Selected validation macro F_0.5:** **0.892146**
 - **Validation precision:** **0.962720**
 - **Validation recall:** **0.797769**
 - **Fresh disjoint confirmation macro F_0.5:** **0.877411**
@@ -106,7 +106,7 @@ False positives were commonly associated with coincidental lexical overlap, mult
 
 False negatives were frequently associated with multilingual or transliterated names, Latin diacritics, substantial lexical variation, address-number inconsistencies, shortened addresses, and true matches with little exact-token overlap.
 
-A dedicated analysis of raw blocking misses showed that Indic-script records represented a significant fraction of retrieval failures, while a Latin-diacritic normalization experiment recovered approximately 69.6% of the Latin-diacritic misses identified in that diagnostic.
+A dedicated analysis of raw blocking misses showed that Indic-script records represented a significant fraction of retrieval failures. Latin-diacritic folding improved retrieval coverage, but the confirmation-set F_0.5 improvement was only about **0.00028**, so the change was retained as an ablation result rather than promoted to production.
 
 No labeled France training data were available, so no France F_0.5, precision, recall, or accuracy is reported. We instead performed an unlabeled domain-shift diagnostic comparing candidate and model-score distributions across France, India, and the United States.
 
@@ -114,9 +114,9 @@ No labeled France training data were available, so no France F_0.5, precision, r
 
 ## 6. Conclusion
 
-The final system combines structured candidate generation with a lightweight supervised classifier, allowing millions of records to be processed without exhaustive pairwise comparison. The strongest improvements came from controlling noisy blocking keys, incorporating fuzzy and structured similarity features, explicitly handling missing addresses, and evaluating candidate retrieval independently from classifier accuracy.
+The final selected system is the **missing-address v2 structured-blocking + HistGradientBoosting pipeline at threshold 0.585**. It combines scalable candidate generation with a lightweight supervised classifier and was preferred over both the neural reranker and the Latin-diacritic folding variant because those alternatives did not demonstrate a robust end-to-end improvement on the disjoint confirmation split.
 
-The project also demonstrated that entity-resolution performance depends strongly on retrieval quality: once a true entity pair is absent from the candidate set, the downstream classifier cannot recover it. For this reason, both candidate recall and final macro F_0.5 were treated as first-class evaluation metrics throughout development.
+The project also demonstrated that entity-resolution performance depends strongly on retrieval quality: once a true entity pair is absent from the candidate set, the downstream classifier cannot recover it. Candidate recall and final macro F_0.5 were therefore treated as separate first-class evaluation metrics throughout development.
 
 ---
 
@@ -147,10 +147,21 @@ Before packaging, the output files are checked with the official challenge valid
 
 #### Missing-address ablation
 
-Changing missing address comparisons from ordinary similarity values to explicit missing numerical values, while retaining the `address_missing` indicator, improved the validation macro F_0.5 from the earlier baseline and produced:
+Changing missing address comparisons from ordinary similarity values to explicit missing numerical values, while retaining the `address_missing` indicator, produced:
 
 - Validation macro F_0.5: **0.892146**
 - Fresh confirmation macro F_0.5: **0.877411**
+
+#### Latin-diacritic folding ablation
+
+Latin-diacritic folding was tested only in retrieval keys and blocking ranks; the frozen v2 classifier inputs and threshold remained unchanged.
+
+- Development candidate-pair recall: **0.93793 → 0.94422**
+- Development macro F_0.5 at threshold 0.585: **0.89215 → 0.89427**
+- Confirmation candidate-pair recall: **0.92234 → 0.92572**
+- Confirmation macro F_0.5 at threshold 0.585: **0.87741 → 0.87769**
+
+Calibration selected 0.615 for the folded candidate set, but that threshold was not evaluated on the disjoint confirmation set. The folded variant was therefore **not promoted**.
 
 #### GPU reranker experiment
 
