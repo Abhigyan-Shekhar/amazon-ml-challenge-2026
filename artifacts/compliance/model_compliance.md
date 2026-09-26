@@ -30,7 +30,7 @@ Repeat repository/license/count verification before neural final packaging. `rep
 
 ## Selected CPU checkpoint
 
-The selected `capped10_fuzzy_tree` is a scikit-learn HistGradientBoosting classifier with 10 token features and 6 RapidFuzz edit features. It uses no pretrained weights and no external data. Installed distribution metadata and tree-size evidence are saved in `cpu_final_evidence.json`. Neural <=8B licensing restrictions are not being used to approve an unverified neural model. The verified reranker was executed on the fixed validation pool and rejected after scoring approximately 0.6482 macro F0.5 versus approximately 0.8902 for the selected fuzzy CPU tree.
+The final classifier is XGBoost 3.2.0, distributed under Apache-2.0, with 10 token/numeric/country/missingness features and 6 RapidFuzz edit features. It has 200 boosted trees and 5,340 serialized decision/leaf nodes, uses no pretrained weights, and uses no external business data. The historical scikit-learn HistGradientBoosting checkpoints remain archived comparison artifacts. The verified neural reranker was executed on the fixed validation pool and rejected after scoring approximately 0.6482 macro F0.5 versus approximately 0.8898 for the selected XGBoost CPU model.
 
 ### Final CPU model licensing note
 

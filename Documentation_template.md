@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-We solve the business entity resolution task using a two-stage **structured blocking + supervised classification** pipeline. Candidate generation combines normalized name and address information with common-key pruning to reduce the comparison space, while a HistGradientBoosting classifier uses lexical, structural, numeric, country, and fuzzy-similarity features to identify matching entities with a decision threshold optimized for macro F_0.5.
+We solve the business entity resolution task using a two-stage **structured blocking + supervised classification** pipeline. Candidate generation combines normalized name and address information with common-key pruning to reduce the comparison space, while an Apache-2.0 licensed XGBoost classifier uses lexical, structural, numeric, country, and fuzzy-similarity features to identify matching entities with a decision threshold optimized for macro F_0.5.
 
 The final pipeline was designed around the challenge's precision-sensitive F_0.5 objective while preserving high candidate recall and explicitly handling missing address values.
 
@@ -36,7 +36,7 @@ Our solution separates the problem into two stages:
 1. Generate a relatively small candidate set for every Source-1 entity using structured name/address blocking.
 2. Score each candidate pair using a supervised classifier trained on labeled entity pairs.
 
-Candidate generation uses normalized structured information while limiting highly frequent keys. For every retrieved pair, we compute lexical, fuzzy, structural, numeric, country, and missing-value features. A HistGradientBoosting classifier then predicts a match probability, and the final probability threshold is selected using macro F_0.5 on held-out validation data.
+Candidate generation uses normalized structured information while limiting highly frequent keys. For every retrieved pair, we compute lexical, fuzzy, structural, numeric, country, and missing-value features. An XGBoost classifier then predicts a match probability, and the final probability threshold is selected using macro F_0.5 on the frozen calibration split.
 
 **Approach Type:** Blocking + Classifier  
 **Core Innovation:** Precision-oriented structured retrieval combined with capped common-key blocking, fuzzy comparison features, and explicit missing-address handling, with major retrieval and classification design decisions validated through controlled ablations.
@@ -72,8 +72,9 @@ The retrieval analysis identified multilingual spelling variation, transliterati
 
 The selected classifier uses **16 engineered features**, including six RapidFuzz similarity features together with token, numeric, country, length, and missingness information.
 
-**Model type:** scikit-learn HistGradientBoostingClassifier  
-**Selected threshold:** **0.585**  
+**Model type:** XGBoost 3.2.0 `XGBClassifier` (Apache-2.0)
+
+**Selected threshold:** **0.645**
 **Threshold selection method:** Macro F_0.5 optimization on a grouped validation split, followed by evaluation on a fresh disjoint confirmation split.
 
 Missing address comparisons are represented as missing numerical values while an explicit binary `address_missing` feature informs the classifier that the absence is structural rather than a low similarity score.
@@ -82,19 +83,21 @@ Missing address comparisons are represented as missing numerical values while an
 
 ## 5. Results & Error Analysis
 
-- **Selected validation macro F_0.5:** **0.892146**
-- **Validation precision:** **0.962720**
-- **Validation recall:** **0.797769**
-- **Fresh disjoint confirmation macro F_0.5:** **0.877411**
-- **Fresh confirmation precision:** **0.952112**
-- **Fresh confirmation recall:** **0.792469**
+- **Selected validation macro F_0.5:** **0.889840**
+- **Validation precision:** **0.966655**
+- **Validation recall:** **0.787757**
+- **Fresh disjoint confirmation macro F_0.5:** **0.878848**
+- **Fresh confirmation precision:** **0.961121**
+- **Fresh confirmation recall:** **0.781733**
 
 The full-test run produced:
 
 - **Source-1 entities:** 1,732,544
 - **Candidate pairs:** 44,931,896
-- **Predicted matching links:** 5,323,479
-- **Source-1 entities with no predicted match:** 124,102
+- **Predicted matching links:** 5,166,347
+- **Source-1 entities with no predicted match:** 133,067
+- **Runtime:** 3,252.18 seconds (54.2 minutes)
+- **Peak retrieval RSS:** 5.04 GiB
 
 The generated outputs were checked using the official validator with full ID checking and produced **zero validation errors and zero warnings**.
 
@@ -114,7 +117,7 @@ No labeled France training data were available, so no France F_0.5, precision, r
 
 ## 6. Conclusion
 
-The final selected system is the **missing-address v2 structured-blocking + HistGradientBoosting pipeline at threshold 0.585**. It combines scalable candidate generation with a lightweight supervised classifier and was preferred over both the neural reranker and the Latin-diacritic folding variant because those alternatives did not demonstrate a robust end-to-end improvement on the disjoint confirmation split.
+The final selected system is the **missing-address v2 structured-blocking + XGBoost pipeline at threshold 0.645**. XGBoost 3.2.0 is Apache-2.0 licensed and satisfies the challenge's stated model-license requirement. It preserves the validated retrieval and 16-feature missing-address design while replacing the historical scikit-learn classifier. The neural reranker and Latin-diacritic folding variant remain rejected experiments.
 
 The project also demonstrated that entity-resolution performance depends strongly on retrieval quality: once a true entity pair is absent from the candidate set, the downstream classifier cannot recover it. Candidate recall and final macro F_0.5 were therefore treated as separate first-class evaluation metrics throughout development.
 

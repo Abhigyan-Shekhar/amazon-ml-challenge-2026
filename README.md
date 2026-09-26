@@ -1,12 +1,18 @@
 # Amazon ML Challenge 2026 — business entity resolution
 
-The real datasets have been audited. The archived fuzzy-feature tree v1 scores **0.890226 macro F0.5** on the development holdout and **0.875554 on a fresh, disjoint 2,000-S1 confirmation set**. The corrected missing-address v2 tree scores **0.892146** and **0.877411** on those same splits, using the calibration-selected threshold **0.585**. Its full-test inference is complete, officially validated with zero errors and warnings, and packaged separately. A separate exact-match fallback (**0.690681** locally) is also packaged and officially validated. **Do not attribute the stronger model’s scores to the fallback files.** No leaderboard submission has been made.
+The real datasets have been audited. The final license-compliant classifier is **XGBoost 3.2.0 (Apache-2.0)** using the capped10/K20 retrieval pool and the same 16 missing-address-v2 features. Its calibration-selected threshold is **0.645**; it scores **0.889840 macro F0.5** on the 1,000-S1 development holdout and **0.878848** on the fresh disjoint 2,000-S1 confirmation set. Full-test inference completed for all 1,732,544 S1 rows. The historical scikit-learn missing-address v2 model remains archived for comparison. No leaderboard submission has been made.
+
+### License-compliant XGBoost final model
+
+The XGBoost replacement was trained only on the frozen 3,000-S1 training groups. Threshold 0.645 was selected on the frozen 1,000-S1 calibration groups, then evaluated on the 1,000-S1 development holdout and once on the disjoint 2,000-S1 confirmation set. It preserves the exact capped10 retrieval and ordered 16-feature missing-address-v2 schema. Compared with the historical HGB v2, development macro F0.5 changes from 0.892146 to 0.889840, while confirmation changes from 0.877411 to 0.878848.
+
+The full-test XGBoost run scored **44,931,896 candidates**, selected **5,166,347 links**, and left **133,067** S1 match lists empty. Runtime was **3,252.18 seconds (54.2 minutes)** and peak retrieval RSS was **5.04 GiB**. These are unlabeled test predictions and runtime measurements, not test accuracy.
 
 This repository contains the completed audit, experiments, reproducible scripts, reports, tests, official validator integration, and packaging workflows. Large outputs, checkpoints, raw data, and the prepared GPU validation package remain local and excluded from Git; teammates must reproduce them or arrange a private artifact transfer.
 
 Archived v1 full-test package: `outputs/fuzzy_tree_v1_submission.zip` (**291.8 MB**, after final documentation refresh and recompression). Both TSVs contain **1,732,544 rows**. The model scored **44,931,896 candidates**, selected **5,196,796 links**, and left **131,317** S1 match lists empty. Runtime: **2,165.16 seconds (36.1 minutes)**; peak measured retrieval RSS: **7.55 GiB**. See [official validation](artifacts/reports/fuzzy_official_validation.json) and [runtime](artifacts/reports/fuzzy_runtime.json). The test partition has **9,969,589 targets**; 10,320,219 is the training target count.
 
-Selected local v2 package: `outputs/fuzzy_missing_address_v2_submission.zip` (**308.2 MB**). Official validation checked all 1,732,544 S1 rows and all target IDs with **zero errors and zero warnings**. The archive includes the v2 checkpoint, output TSVs, manifests, methodology, and runnable repository code. **Explicit human approval is required before any leaderboard upload.**
+Historical HGB v2 package: `outputs/fuzzy_missing_address_v2_submission.zip` (**308.2 MB**). It remains a validated comparison artifact and is not the final license-compliant package. **Explicit human approval is required before any leaderboard upload.**
 
 ### Missing-address v2 promotion
 
@@ -20,7 +26,7 @@ A controlled 100,000-pair `predict_proba` benchmark found about **1.38 million p
 
 Manual review of 30 missed true pairs and 23 false positives is recorded in `artifacts/validation/hgb_score_diagnostic/stratified_manual_review.csv` and reproducibly annotated by `scripts/23_annotate_review.py`. All 16 missed-pair `other` cases now have a subtype and exclusion reason. Four transliterations plus two plausible semantic aliases make **6/30 (20%)**, below the 40% embedding gate; the broader name-variation signal is **11/30 (36.7%)**. Seven `other` labels remain unclear, so the conservative upper bound is **13/30 (43.3%)** if every unclear case were a valid semantic alias. The embedding gate is therefore **indeterminate**, and no embedding feature is promoted on this evidence. Label noise plus shared-address ambiguity is **4/30 (13.3%)**, below the 50% ceiling gate. See [gate report](artifacts/reports/annotation_gate_v2.json).
 
-Before any leaderboard upload, freeze the final checkpoint and threshold, complete full-test inference and official ID/format validation, package the outputs and runnable code, and obtain explicit human approval. The local package is not an upload authorization.
+The XGBoost checkpoint and threshold are frozen, full-test inference is complete, and the official validator passed full ID/format checking. Packaging provenance and explicit human upload approval remain separate gates; a local package is not an upload authorization.
 
 ## Completed
 
@@ -122,7 +128,7 @@ python utils/validate_submission.py --matching outputs/new_exact/matching_result
 
 The small-data runner `02_baseline.py` is retained for fixtures and small subsets. Do not point it at the multi-million-record dataset.
 
-## Selected CPU model and full-test run
+## Historical HGB reproduction
 
 ```sh
 python scripts/11_sample_candidates.py --root /path/to/resources/train --address-path --max-key-frequency 10 --output artifacts/candidates/new_capped
@@ -144,7 +150,15 @@ python scripts/17_package_baseline.py --run outputs/new_missing_address_v2 --tes
 
 The `--missed` file only produces the historical 515-pair diagnostic count; it does not affect model fitting or threshold selection. Generate the independent confirmation sample first if those frozen local artifacts are unavailable.
 
-`19_confirmation_sample.py` and `20_confirm_frozen.py` produce and evaluate a disjoint confirmation sample. They never recalibrate the frozen threshold. The current selected local model is `artifacts/experiments/capped10_missing_address_v2/model.joblib`, threshold **0.585**. The archived v1 checkpoint remains `artifacts/experiments/capped10_fuzzy_tree/model.joblib`, threshold **0.64**. Checkpoints, raw data, pair caches, and outputs remain ignored by Git.
+`19_confirmation_sample.py` and `20_confirm_frozen.py` produce and evaluate a disjoint confirmation sample. They never recalibrate the frozen threshold. The final compliant model is produced by `scripts/24_xgboost_compliance.py`, with threshold **0.645**. The historical HGB v2 checkpoint remains `artifacts/experiments/capped10_missing_address_v2/model.joblib` at threshold **0.585**. Checkpoints, raw data, pair caches, and outputs remain ignored by Git.
+
+Final XGBoost reproduction, using the already frozen capped10/K20 pool and grouped split:
+
+```sh
+python scripts/24_xgboost_compliance.py --run artifacts/experiments/new_capped --candidates artifacts/candidates/new_capped --confirmation artifacts/candidates/confirmation_cap10 --output artifacts/experiments/new_xgboost_final
+PYTHONHASHSEED=2026 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python scripts/18_full_structured.py --test-dir /path/to/resources/test --model-dir artifacts/experiments/new_capped --tree-dir artifacts/experiments/new_xgboost_final --max-key-frequency 10 --output outputs/new_xgboost_final --budget-seconds 4200 --memory-gib 10
+python scripts/17_package_baseline.py --run outputs/new_xgboost_final --test-dir /path/to/resources/test
+```
 
 The intermediate token-only full-test attempt was stopped before prediction output after the measured fuzzy-feature improvement; its checkpoint and progress remain under `outputs/structured_tree_v1/`. It is not a complete submission. The validated exact fallback remains intact.
 
@@ -171,24 +185,17 @@ The script checks repository license/count before weights, pins the resolved rev
 python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_address_v2 --cache /path/to/reranker_pretrained --output artifacts/validation/pretrained_reranker.json
 ```
 
-[Compliance evidence](artifacts/compliance/model_compliance.md) verifies the reranker's repository metadata. BGE-M3 is still deferred because parameter-count evidence is incomplete. **No neural inference or fine-tuning has run.** Reverify any selected neural model before final packaging.
+[Compliance evidence](artifacts/compliance/model_compliance.md) verifies the reranker's repository metadata. The pretrained reranker was run on the fixed validation pool and rejected; no neural fine-tuning was performed.
 
 ## Remaining work
 
-- [ ] **Team handoff:** Obtain the ignored `outputs/fuzzy_missing_address_v2_submission.zip` through a private artifact transfer and verify SHA-256 `10f28301c9f5fcca26ae01b714211df9b129eeeb376691e48769770653e9f4f6`. The Git branch contains code and aggregate reports, not raw data, checkpoints, or submission TSVs.
-- [x] **Resolve the embedding gate:** Seven `label_valid_under_spec=unclear` missed-pair rows in `stratified_manual_review.csv` formally closed as unresolved under agreed protocol (no external records, no unverified embeddings). Embedding gate is indeterminate (observed alias share 6/30 = 20%); no embedding feature promoted. See `artifacts/reports/annotation_gate_v2.json`.
-- [ ] **Check transfer and runtime:** France has no supplied training labels; investigate domain shift separately. Recheck v2's 57.1-minute full-run time on the intended machine before planning any time-sensitive inference. The controlled classifier benchmark did not show a NaN-specific prediction slowdown.
-- [x] Complete full-file official validation and package the fallback.
-- [x] Finish, officially validate, and package the selected fuzzy-tree full-test run (`outputs/fuzzy_tree_v1`).
-- [x] Correct missing-address feature encoding, confirm gains on both validation splits, run and officially validate full-test v2, and package `outputs/fuzzy_missing_address_v2_submission.zip`.
-- [x] Run and import the GPU pretrained-reranker benchmark. On the shared 1,000-S1 validation split, BGE reranking scored 0.6482 macro F0.5 versus 0.8902 for the selected fuzzy CPU tree; it is not promoted. See [GPU reranker validation](artifacts/reports/pretrained_reranker_validation.json).
-- [ ] Improve remaining retrieval misses (especially altered scripts/names) toward 99% recall; dense/BM25/RRF additions require measured gains and feasible runtime.
-- [ ] After a successful pretrained baseline, prepare supervised hard negatives and at most one mining round; preserve v1/v2 separately.
-- [ ] Consider global consistency only as a measured experiment; the uniqueness audit permits testing it, but does not establish unseen-test behavior.
-- [x] Run fresh disjoint confirmation after model selection, without further tuning.
-- [x] Test a versioned normalization that preserves Unicode combining marks, particularly for noisy target scripts; never change frozen model preprocessing in place. **Done (2026-09-26): Latin diacritic folding tested end-to-end on capped10 at frozen threshold 0.585. Confirmation gain +0.00028 — REJECTED for production. `DIACRITIC_FOLDING_ENABLED=False` in `src/normalize.py`. Results in `artifacts/validation/diacritic_fold_end_to_end.json`.**
-- [ ] Seek explicit human approval before any leaderboard upload. Recheck neural compliance if a future neural model is selected.
+- [x] Train and validate the Apache-2.0 XGBoost classifier on the frozen grouped splits.
+- [x] Run full-test XGBoost inference within the 4,200-second and 10-GiB gates.
+- [x] Run the official validator with full ID checking for all 1,732,544 S1 rows and 9,969,589 target IDs.
+- [x] Keep diacritic folding rejected, embeddings unpromoted, and the seven unclear annotations closed unresolved without external lookups.
+- [ ] Build and hash the final XGBoost ZIP from the frozen Git commit.
+- [ ] Obtain explicit human approval before any leaderboard or final-package upload.
 
-For parallel work, start from the latest pushed commit and use separate output directories. Remaining research tasks include retrieval-recall improvements, France/domain-shift investigation (France has no supplied training labels), and review of the final fuzzy full-test artifacts. Do not overwrite the frozen checkpoints or claim a leaderboard score from local validation.
+France has no supplied labels, so no France F0.5, precision, recall, or accuracy is claimed. Future retrieval research is outside the frozen submission pipeline.
 
 `artifacts/submissions/submission_log.csv` remains empty. No submission slot has been used. Never exceed five uploads per challenge calendar day; the challenge timezone and any additional rules still need confirmation. Reserve the final two hours for packaging and validation.
