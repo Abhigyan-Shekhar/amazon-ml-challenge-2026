@@ -53,5 +53,16 @@
   "missed_label_noise_plus_ambiguous_address_share": 0.13333333333333333,
   "gate_embedding_cleared": false,
   "embedding_gate_status": "indeterminate",
-  "gate_ceiling_dominates": false
+  "gate_ceiling_dominates": false,
+  "closure_decision": {
+    "status": "CLOSED_UNRESOLVED",
+    "unclear_row_count": 7,
+    "unclear_rows_description": "Seven false-negative true-pair rows in the other category have label_valid_under_spec=unclear. Cases involve phase typos, hospital unit designators, and similar boundary judgments where name and address fields alone are insufficient to establish same-entity identity under the challenge linkage definition.",
+    "resolution": "Under agreed team protocol: (1) no external business-record lookup, (2) no unverified embedding features, (3) no threshold retuning. The seven rows are formally closed as unresolved. The embedding gate remains indeterminate (not cleared, not failed).",
+    "embedding_gate_final": "indeterminate",
+    "gate_cleared": false,
+    "gate_action": "No embedding or external-record feature is promoted. Production model and threshold are unchanged.",
+    "decided_on": "2026-09-26",
+    "decided_by": "team protocol \u2014 explicit human review protocol exhausted under current dataset constraints"
+  }
 }

@@ -2,5 +2,20 @@
   "sample_s1": 5000,
   "names_with_combining_marks": 0,
   "addresses_with_combining_marks": 0,
-  "observation": "Current frozen normalization v1 replaces Unicode combining marks with spaces along with punctuation. Raw fields remain intact. Evaluate a mark-preserving normalization v2 on a separate checkpoint before replacing frozen pipelines."
+  "observation": "Current frozen normalization v1 replaces Unicode combining marks with spaces along with punctuation. Raw fields remain intact. Evaluate a mark-preserving normalization v2 on a separate checkpoint before replacing frozen pipelines.",
+  "ablation_outcome": {
+    "description": "Latin diacritic folding (NFD decompose + strip Mn category) tested end-to-end on the capped10 pipeline at frozen threshold 0.585.",
+    "confirmation_delta_macro_F0.5": 0.00028,
+    "confirmation_baseline_macro_F0.5": 0.8774113486667228,
+    "confirmation_folded_macro_F0.5": 0.8776920775625834,
+    "dev_delta_macro_F0.5": 0.002119,
+    "dev_baseline_macro_F0.5": 0.8921459851737235,
+    "dev_folded_macro_F0.5": 0.8942650976768663,
+    "source": "artifacts/validation/diacritic_fold_end_to_end.json",
+    "evaluated_on": "2026-09-26"
+  },
+  "ablation_status": "REJECTED_FOR_PRODUCTION",
+  "ablation_rejection_reason": "Confirmation gain (+0.00028 macro F0.5) is negligible and insufficient to justify replacing the frozen preprocessing path. The folded calibration threshold was not evaluated on confirmation, providing insufficient robust evidence. DIACRITIC_FOLDING_ENABLED remains False in src/normalize.py.",
+  "production_normalization": "unicode-nfkc-lower-punctuation-space-v1",
+  "production_flag": "DIACRITIC_FOLDING_ENABLED = False"
 }

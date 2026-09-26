@@ -31,3 +31,22 @@ Archived v1 full-test fuzzy inference completed for all 1,732,544 S1s, scoring 4
 The full-test fallback is a separate runtime-feasible checkpoint. Its output must not be presented as predictions from the stronger sample model. It retrieves by exact sorted name-core or exact sorted address tokens, then token-overlap top K per source, then frozen token-feature logistic inference. Both output files include every S1, including blank singleton fields. Candidate output is generated from the finalized pool actually scored.
 
 The GPU package exports the fixed development candidate pool (227,362 pairs), with split metadata. The Apache-2.0 BAAI/bge-reranker-v2-m3 reranker was executed on this validation setup and scored approximately 0.6482 macro F0.5, compared with approximately 0.8902 for the selected fuzzy CPU tree on the same split. It was therefore rejected for promotion. The measured reranker throughput was approximately 219.27 pairs/second. No neural fine-tuning was performed. Dense retrieval, BM25/RRF, neural fine-tuning and global consistency are not claimed as completed ablations. Existing successful CPU checkpoints are preserved; remaining work focuses on measured retrieval-recall improvements and final submission hardening.
+
+## Ablations & Rejected Changes
+
+### Diacritic-Normalization Folding (2026-09-26)
+
+A Latin diacritic-folding step (NFD decompose and strip Unicode Mn combining characters, e.g. é→e) was evaluated end-to-end on the capped10 pipeline using the frozen missing-address v2 model and the frozen threshold 0.585. No model was retrained; only preprocessing changed in the retrieval and feature paths.
+
+| Split | Baseline macro F0.5 | Folded macro F0.5 | Δ |
+|---|---:|---:|---:|
+| Dev holdout (1,000 S1) | 0.892146 | 0.894265 | +0.002119 |
+| Confirmation (2,000 S1, disjoint) | 0.877411 | 0.877692 | **+0.00028** |
+
+**Decision: REJECTED for production.** The disjoint confirmation gain is negligible (+0.00028) and below any meaningful threshold of practical significance. The folded calibration threshold (0.615) was only evaluated on the dev split and not on the confirmation set, providing insufficient robust evidence to justify replacing a frozen production preprocessing path. `DIACRITIC_FOLDING_ENABLED` is locked to `False` in `src/normalize.py`. The full results are archived in `artifacts/validation/diacritic_fold_end_to_end.json` and indexed in `experiment_summary.json` under key `diacritic_fold_capped10_ablation`.
+
+### Manual Annotation Gate — Unclear Cases (2026-09-26)
+
+The 53-row manual review of missed pairs and false positives was completed and annotated in `scripts/23_annotate_review.py`. Seven false-negative true-pair rows in the `other` category carry `label_valid_under_spec=unclear`. These cases involve ambiguous unit designators, phase-label typos, and name-form boundaries where available fields are insufficient to establish same-entity identity under the challenge linkage definition.
+
+Under the agreed team protocol — no external business-record lookup, no unverified embedding features, no threshold retuning — these seven rows are formally **CLOSED / UNRESOLVED**. The embedding gate remains **indeterminate** (observed share 6/30 = 20%, below the 40% gate; upper bound 13/30 = 43.3%, above the gate but uncertain). No embedding feature is promoted. The formal closure record is in `artifacts/reports/annotation_gate_v2.json` under key `closure_decision`.

@@ -176,7 +176,7 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 ## Remaining work
 
 - [ ] **Team handoff:** Obtain the ignored `outputs/fuzzy_missing_address_v2_submission.zip` through a private artifact transfer and verify SHA-256 `10f28301c9f5fcca26ae01b714211df9b129eeeb376691e48769770653e9f4f6`. The Git branch contains code and aggregate reports, not raw data, checkpoints, or submission TSVs.
-- [ ] **Resolve the embedding gate:** Review the seven `label_valid_under_spec=unclear` missed-pair rows in `artifacts/validation/hgb_score_diagnostic/stratified_manual_review.csv` against independent evidence if available. The observed alias share is 6/30, while the conservative upper bound is 13/30; do not call the gate closed or promote an embedding on the current annotation alone.
+- [x] **Resolve the embedding gate:** Seven `label_valid_under_spec=unclear` missed-pair rows in `stratified_manual_review.csv` formally closed as unresolved under agreed protocol (no external records, no unverified embeddings). Embedding gate is indeterminate (observed alias share 6/30 = 20%); no embedding feature promoted. See `artifacts/reports/annotation_gate_v2.json`.
 - [ ] **Check transfer and runtime:** France has no supplied training labels; investigate domain shift separately. Recheck v2's 57.1-minute full-run time on the intended machine before planning any time-sensitive inference. The controlled classifier benchmark did not show a NaN-specific prediction slowdown.
 - [x] Complete full-file official validation and package the fallback.
 - [x] Finish, officially validate, and package the selected fuzzy-tree full-test run (`outputs/fuzzy_tree_v1`).
@@ -186,7 +186,7 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 - [ ] After a successful pretrained baseline, prepare supervised hard negatives and at most one mining round; preserve v1/v2 separately.
 - [ ] Consider global consistency only as a measured experiment; the uniqueness audit permits testing it, but does not establish unseen-test behavior.
 - [x] Run fresh disjoint confirmation after model selection, without further tuning.
-- [ ] Test a versioned normalization that preserves Unicode combining marks, particularly for noisy target scripts; never change frozen model preprocessing in place.
+- [x] Test a versioned normalization that preserves Unicode combining marks, particularly for noisy target scripts; never change frozen model preprocessing in place. **Done (2026-09-26): Latin diacritic folding tested end-to-end on capped10 at frozen threshold 0.585. Confirmation gain +0.00028 — REJECTED for production. `DIACRITIC_FOLDING_ENABLED=False` in `src/normalize.py`. Results in `artifacts/validation/diacritic_fold_end_to_end.json`.**
 - [ ] Seek explicit human approval before any leaderboard upload. Recheck neural compliance if a future neural model is selected.
 
 For parallel work, start from the latest pushed commit and use separate output directories. Remaining research tasks include retrieval-recall improvements, France/domain-shift investigation (France has no supplied training labels), and review of the final fuzzy full-test artifacts. Do not overwrite the frozen checkpoints or claim a leaderboard score from local validation.
