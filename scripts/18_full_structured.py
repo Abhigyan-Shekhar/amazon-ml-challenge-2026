@@ -32,10 +32,10 @@ def run(root,model_dir,output,budget,memory_gib,method,tree_dir=None,max_key_fre
     if structured:
         tree=joblib.load(tree_dir/'model.joblib');tree_report=json.loads((tree_dir/'validation.json').read_text())
         if not tree_report.get('cheap_only'):raise ValueError('Full streaming tree requires token-only model')
-        threshold=tree['threshold'];tree_model=tree['model'];uses_fuzzy=bool(tree.get('uses_fuzzy',False))
+        threshold=tree['threshold'];tree_model=tree['model'];uses_fuzzy=bool(tree.get('uses_fuzzy',False));neutral_missing_address=bool(tree.get('neutral_missing_address',False))
         if uses_fuzzy:
             from src.features.fuzzy import fuzzy_features,NAMES as FUZZY_NAMES
-        manifest.update({'model_name':'structured_cheap_tree','checkpoint_path':str((tree_dir/'model.joblib').resolve()),'checkpoint_sha256':hashlib.sha256((tree_dir/'model.joblib').read_bytes()).hexdigest(),'threshold':threshold,'validation_macro_F0.5':tree_report['validation']['macro_F0.5'],'validation_slices':tree_report['slices'],'model_parameter_count':1+sum(len(t.nodes) for iteration in tree_model._predictors for t in iteration),'parameter_count_method':'numeric split thresholds and leaf values plus base logit; not a neural model','candidate_config':{'method':'structured name/address keys, capped by full S1 key frequency','k_per_source':k,'max_key_frequency':max_key_frequency,'ranking':'max name/address token score'},'selected_as':'validated structured token-feature tree','retrieval_config':'bounded hashed query-key index; no country filter'})
+        manifest.update({'model_name':'structured_cheap_tree','checkpoint_path':str((tree_dir/'model.joblib').resolve()),'checkpoint_sha256':hashlib.sha256((tree_dir/'model.joblib').read_bytes()).hexdigest(),'threshold':threshold,'validation_macro_F0.5':tree_report['validation']['macro_F0.5'],'validation_slices':tree_report.get('slices',{}),'model_parameter_count':1+sum(len(t.nodes) for iteration in tree_model._predictors for t in iteration),'parameter_count_method':'numeric split thresholds and leaf values plus base logit; not a neural model','candidate_config':{'method':'structured name/address keys, capped by full S1 key frequency','k_per_source':k,'max_key_frequency':max_key_frequency,'ranking':'max name/address token score'},'selected_as':'validated structured token-feature tree','retrieval_config':'bounded hashed query-key index; no country filter','neutral_missing_address':neutral_missing_address})
     if structured and uses_fuzzy:
         manifest['feature_config']=experiment.FEATURES[3:13]+FUZZY_NAMES
         manifest['uses_fuzzy']=True
@@ -114,7 +114,7 @@ def run(root,model_dir,output,budget,memory_gib,method,tree_dir=None,max_key_fre
             records=[r for si in (0,1) for _,r in sorted(heaps[si][qi],reverse=True)]
             tids=[r[0] for r in records]
             if len(tids)!=len(set(tids)):raise ValueError('Duplicate target')
-            feature_rows.extend(experiment.cheap_features(qn,qa,qc,r[1],r[2],r[3])+(fuzzy_features(qn,qa,r[1],r[2]) if uses_fuzzy else []) for r in records);pending.append((eid,tids));heaps[0][qi].clear();heaps[1][qi].clear()
+            feature_rows.extend(experiment.cheap_features(qn,qa,qc,r[1],r[2],r[3],neutral_missing_address=neutral_missing_address)+(fuzzy_features(qn,qa,r[1],r[2],neutral_missing_address=neutral_missing_address) if uses_fuzzy else []) for r in records);pending.append((eid,tids));heaps[0][qi].clear();heaps[1][qi].clear()
             if len(feature_rows)>=20000 or len(pending)>=5000:flush()
             if qi%100000==0:
                 print(json.dumps({'scored_s1':qi,'pairs':pair_count,'matches':matches,'total_seconds':time.monotonic()-start}),flush=True)

@@ -1,0 +1,37 @@
+{
+  "baseline": {
+    "s1_rows": 1732544,
+    "candidates": 44931896,
+    "matches": 5196796,
+    "seconds": 2165.159070749999,
+    "peak_retrieval_rss_gib": 7.5526580810546875,
+    "official_validation": "pending"
+  },
+  "v2": {
+    "s1_rows": 1732544,
+    "candidates": 44931896,
+    "matches": 5323479,
+    "seconds": 3423.7093917079983,
+    "peak_retrieval_rss_gib": 4.9131622314453125,
+    "official_validation": "pending"
+  },
+  "candidate_delta": 0,
+  "link_delta": 126683,
+  "link_delta_percent": 2.437713545038145,
+  "runtime_delta_percent": 58.127383708673385,
+  "added_links": 163743,
+  "removed_links": 37060,
+  "changed_s1": 176821,
+  "empty_s1_v1": 131317,
+  "empty_s1_v2": 124102,
+  "official_validation": {
+    "errors": [],
+    "warnings": [],
+    "check_ids": true
+  },
+  "checkpoint_sha256": "ea1d59608a52697c79505840952ea997092a7f998077c273e4a48c8897b694cb",
+  "threshold": 0.5849999999999999,
+  "archive_bytes": 308203978,
+  "archive_sha256": "10f28301c9f5fcca26ae01b714211df9b129eeeb376691e48769770653e9f4f6",
+  "upload_status": "not uploaded; explicit human approval required"
+}

@@ -23,9 +23,12 @@ else:
     (a.run/'classifier_parameters.json').write_text(json.dumps(export,indent=2))
     parameter_file='classifier_parameters.json'
 # Add packaging provenance separately; the pre-inference freeze remains unchanged.
-package={'frozen_manifest':manifest,'source_state_note':'Experiments ran with working-tree changes beyond the recorded base git commit. Source hashes below identify files at packaging; the tested source is committed separately.','python':platform.python_version(),'package_versions':{p:importlib.metadata.version(p) for p in ['numpy','pandas','scikit-learn','scipy','joblib']},'source_sha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for base in ['src','scripts'] for p in sorted(Path(base).rglob('*.py'))},'input_manifest':json.loads(Path('artifacts/reports/input_manifest.json').read_text()),'official_validation':report,'submission_recommendation':('Worth considering one approved baseline slot: independently confirmed fuzzy tree; France remains unvalidated.' if manifest.get('uses_fuzzy') else 'Hold: stronger validated CPU checkpoint available. No upload approved or performed.')}
+package={'frozen_manifest':manifest,'source_state_note':'Source hashes identify the code included in this package. The archived v1 checkpoint remains separate.','python':platform.python_version(),'package_versions':{p:importlib.metadata.version(p) for p in ['numpy','pandas','scikit-learn','scipy','joblib']},'source_sha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for base in ['src','scripts','utils'] for p in sorted(Path(base).rglob('*.py'))},'input_manifest':json.loads(Path('artifacts/reports/input_manifest.json').read_text()),'official_validation':report,'submission_recommendation':('Validated local package; explicit human approval required before any leaderboard upload. France remains unvalidated.' if manifest.get('uses_fuzzy') else 'Hold: stronger validated CPU checkpoint available. No upload approved or performed.')}
 if manifest.get('uses_fuzzy'):
-    package['independent_confirmation']=json.loads(Path('artifacts/reports/fuzzy_confirmation.json').read_text())
+    checkpoint_report=Path(manifest['checkpoint_path']).with_name('validation.json')
+    measured=json.loads(checkpoint_report.read_text()) if checkpoint_report.exists() else {}
+    confirmation_path=Path('artifacts/validation/confirmation/missing_address_v2.json') if manifest.get('neutral_missing_address') else Path('artifacts/reports/fuzzy_confirmation.json')
+    package['independent_confirmation']=json.loads(confirmation_path.read_text()) if confirmation_path.exists() else measured.get('confirmation')
     package['package_versions']['rapidfuzz']=importlib.metadata.version('rapidfuzz')
 package['output_sha256']={}
 for name in ['matching_results.tsv','candidate_pairs.tsv']:
@@ -36,4 +39,7 @@ with zipfile.ZipFile(archive,'x',compression=zipfile.ZIP_DEFLATED,compresslevel=
  for name in ['matching_results.tsv','candidate_pairs.tsv']:z.write(a.run/name,arcname='output/'+name)
  for name in ['final_manifest.json','package_manifest.json','official_validation.json',parameter_file]:z.write(a.run/name,arcname=name)
  z.write('artifacts/methodology.md',arcname='methodology.md')
+ for base in ['src','scripts','utils']:
+  for source in sorted(Path(base).rglob('*.py')):z.write(source,arcname='code/business_entity_resolution/'+str(source))
+ for name in ['README.md','requirements.txt','config.example.json']:z.write(name,arcname='code/business_entity_resolution/'+name)
 print('Created',archive,'bytes',archive.stat().st_size,flush=True)
