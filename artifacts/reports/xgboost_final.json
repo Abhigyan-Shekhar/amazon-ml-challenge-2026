@@ -48,6 +48,13 @@
     "errors": 0,
     "warnings": 0
   },
+  "final_package": {
+    "path": "outputs/xgb_missing_address_final_submission.zip",
+    "size_bytes": 307267836,
+    "sha256": "2a137b2622e235c838f67936b6334790b8b7a1d8c6e27ff4751b7c7dcd5c36ac",
+    "source_git_commit": "463b6142371748b8c3d937473ff30b2dcec320e4",
+    "zip_integrity": "PASS"
+  },
   "rejected_or_closed": {
     "diacritic_folding": "rejected",
     "embedding_model": "not promoted",
