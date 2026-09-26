@@ -175,6 +175,9 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 
 ## Remaining work
 
+- [ ] **Team handoff:** Obtain the ignored `outputs/fuzzy_missing_address_v2_submission.zip` through a private artifact transfer and verify SHA-256 `10f28301c9f5fcca26ae01b714211df9b129eeeb376691e48769770653e9f4f6`. The Git branch contains code and aggregate reports, not raw data, checkpoints, or submission TSVs.
+- [ ] **Resolve the embedding gate:** Review the seven `label_valid_under_spec=unclear` missed-pair rows in `artifacts/validation/hgb_score_diagnostic/stratified_manual_review.csv` against independent evidence if available. The observed alias share is 6/30, while the conservative upper bound is 13/30; do not call the gate closed or promote an embedding on the current annotation alone.
+- [ ] **Check transfer and runtime:** France has no supplied training labels; investigate domain shift separately. Recheck v2's 57.1-minute full-run time on the intended machine before planning any time-sensitive inference. The controlled classifier benchmark did not show a NaN-specific prediction slowdown.
 - [x] Complete full-file official validation and package the fallback.
 - [x] Finish, officially validate, and package the selected fuzzy-tree full-test run (`outputs/fuzzy_tree_v1`).
 - [x] Correct missing-address feature encoding, confirm gains on both validation splits, run and officially validate full-test v2, and package `outputs/fuzzy_missing_address_v2_submission.zip`.
