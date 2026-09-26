@@ -150,7 +150,7 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 
 - [x] Complete full-file official validation and package the fallback.
 - [x] Finish, officially validate, and package the selected fuzzy-tree full-test run (`outputs/fuzzy_tree_v1`).
-- [ ] Run the supplied GPU pretrained-reranker benchmark and import scores; retain it only if grouped results improve.
+- [x] Run and import the GPU pretrained-reranker benchmark. On the shared 1,000-S1 validation split, BGE reranking scored 0.6482 macro F0.5 versus 0.8902 for the selected fuzzy CPU tree; it is not promoted. See [GPU reranker validation](artifacts/reports/pretrained_reranker_validation.json).
 - [ ] Improve remaining retrieval misses (especially altered scripts/names) toward 99% recall; dense/BM25/RRF additions require measured gains and feasible runtime.
 - [ ] After a successful pretrained baseline, prepare supervised hard negatives and at most one mining round; preserve v1/v2 separately.
 - [ ] Consider global consistency only as a measured experiment; the uniqueness audit permits testing it, but does not establish unseen-test behavior.
@@ -158,6 +158,6 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 - [ ] Test a versioned normalization that preserves Unicode combining marks, particularly for noisy target scripts; never change frozen model preprocessing in place.
 - [ ] Recheck neural compliance if applicable, freeze the selected final pipeline, run full test inference, validate, package, and seek explicit human approval before a leaderboard upload.
 
-For parallel work, start from the latest pushed commit and use separate output directories. The highest-value independent tasks are GPU reranker benchmarking, retrieval-recall improvements, France/domain-shift investigation (France has no supplied training labels), and review of the final fuzzy full-test artifacts. Do not overwrite the frozen checkpoints or claim a leaderboard score from local validation.
+For parallel work, start from the latest pushed commit and use separate output directories. Remaining research tasks include retrieval-recall improvements, France/domain-shift investigation (France has no supplied training labels), and review of the final fuzzy full-test artifacts. Do not overwrite the frozen checkpoints or claim a leaderboard score from local validation.
 
 `artifacts/submissions/submission_log.csv` remains empty. No submission slot has been used. Never exceed five uploads per challenge calendar day; the challenge timezone and any additional rules still need confirmation. Reserve the final two hours for packaging and validation.
