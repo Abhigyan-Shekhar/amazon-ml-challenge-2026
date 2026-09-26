@@ -38,6 +38,7 @@ archive=a.run.parent/(a.run.name+'_submission.zip')
 with zipfile.ZipFile(archive,'x',compression=zipfile.ZIP_DEFLATED,compresslevel=3) as z:
  for name in ['matching_results.tsv','candidate_pairs.tsv']:z.write(a.run/name,arcname='output/'+name)
  for name in ['final_manifest.json','package_manifest.json','official_validation.json',parameter_file]:z.write(a.run/name,arcname=name)
+ z.write('Documentation_template.md',arcname='Documentation_template.md')
  z.write('artifacts/methodology.md',arcname='methodology.md')
  for base in ['src','scripts','utils']:
   for source in sorted(Path(base).rglob('*.py')):z.write(source,arcname='code/business_entity_resolution/'+str(source))
