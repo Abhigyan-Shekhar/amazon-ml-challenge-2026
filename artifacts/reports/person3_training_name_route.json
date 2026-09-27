@@ -1,0 +1,22 @@
+{
+  "status": "not_run_missing_local_inputs",
+  "purpose": "Exploratory candidate retrieval ablation only; no model-score claim",
+  "route_version": "training-name-alias-components-v1",
+  "reason": "The checkout does not contain the training records, frozen split IDs, or forward candidate caches required to measure the existing splits.",
+  "training_only_map_policy": {
+    "label_partition": "train",
+    "minimum_distinct_s1_entities_per_alias_edge": 2,
+    "minimum_distinct_target_entities_per_alias_edge": 2,
+    "calibration_development_test_labels_used_for_map": false,
+    "external_business_lookups_used": false
+  },
+  "measurements": null,
+  "measurements_to_generate": [
+    "candidate_pair_recall_by_existing_split",
+    "new_and_lost_true_links_by_existing_split",
+    "added_candidates_per_s1_quantiles_by_existing_split",
+    "route_generation_runtime_seconds",
+    "evaluation_runtime_seconds"
+  ],
+  "reproduction": "See docs/person3_training_name_route.md"
+}
