@@ -196,3 +196,85 @@ def test_complete_comparison_retrains_all_prespecified_controls(tmp_path):
     eligible = {'forward47': result['forward47'], **result['runs']}
     best = max(eligible, key=lambda k: (eligible[k]['calibration']['macro_F0.5'], k))
     assert result['selected_by_calibration'] == best
+
+
+@pytest.fixture
+def validation_case(tmp_path):
+    union_dir = tmp_path/'unions'
+    union_dir.mkdir()
+    queries, forward, _, report = union_fixture(union_dir)
+    _, _, split = fixture_rows()
+    sample, pairs, splits, allowed = [tmp_path/n for n in ('sample.jsonl','pairs.jsonl','split.json','allowed.tsv')]
+    sample.write_text(''.join(json.dumps(r)+'\n' for r in queries.values()))
+    pairs.write_text(''.join(json.dumps(r)+'\n' for r in forward))
+    splits.write_text(json.dumps(split))
+    runner.frame_for(forward).to_csv(allowed, sep='\t', index=False)
+    args = SimpleNamespace(sample=sample,pairs=pairs,split=splits,allowed=allowed,output=tmp_path/'baseline')
+    runner.control.run(args)
+    args.baseline=args.output
+    args.output=tmp_path/'validation-result'
+    args.unions=union_dir
+    args.manifest=tmp_path/'manifest.json'
+    subset_hashes=runner.validation_subset_hashes(args, split, forward)
+    report['inputs']=dict(sample=subset_hashes['sample'], split=subset_hashes['split'],
+                         forward_pairs=subset_hashes['allowed'],forward_cache=subset_hashes['pairs'])
+    report['reverse_manifest'].update(emitted_s1_count=3,sample_sha256=subset_hashes['sample'],
+                                      forward_pairs_sha256=subset_hashes['allowed'])
+    args.manifest.write_text(json.dumps(report['reverse_manifest']))
+    report['inputs']['reverse_manifest']=runner.sha(args.manifest)
+    for k in (1,3,8):
+        path=union_dir/f'union_k{k}.jsonl'
+        rows=runner.read_rows(path)
+        extra=copy.deepcopy(next(r for r in rows if r['target_entity_id']=='S3-new'))
+        extra.update(source1_entity_id='S1-6',reverse_best_s1_id='S1-6')
+        rows=[r for r in rows if r['source1_entity_id'] in split['validation']]+[extra]
+        path.write_text(''.join(json.dumps(r)+'\n' for r in rows))
+        report['unions'][str(k)]['sha256']=runner.sha(path)
+    (union_dir/'report.json').write_text(json.dumps(report))
+    return args,queries,forward,split
+
+
+def test_validation_only_never_trains_or_recalibrates(validation_case, monkeypatch):
+    args,queries,forward,split=validation_case
+    def forbidden(*a,**kw):
+        raise AssertionError('Validation-only must not train or select a threshold')
+    monkeypatch.setattr(runner.XGBClassifier,'fit',forbidden)
+    monkeypatch.setattr(runner,'select_threshold',forbidden)
+    runner.validation_only(args)
+    report=json.loads((args.output/'report.json').read_text())
+    assert report['complete'] and report['scope']['mode']=='validation-only'
+    assert report['scope']['validation_s1_count']==3
+    assert not report['scope']['full_split_comparison']
+    assert not report['scope']['model_retrained']
+    assert not report['scope']['threshold_reselected']
+    assert len(report['runs'])==8
+    assert report['candidate_metrics']['forward']['candidate_count']==6
+    assert report['candidate_metrics']['union_k8']['candidate_count']==7
+    for path in args.output.glob('*.tsv'):
+        frame=pd.read_csv(path,sep='\t')
+        assert set(frame.source1_entity_id)<=set(split['validation'])
+    # The same subset cannot masquerade as a full-split comparison.
+    with pytest.raises(ValueError,match='input hashes'):
+        runner.completed_unions(args.unions,runner.input_hashes(args),forward,queries)
+
+
+@pytest.mark.parametrize('corruption',['subset_hash','manifest','foreign_owner'])
+def test_validation_only_rejects_bad_provenance(validation_case,corruption):
+    args,_,_,_=validation_case
+    path=args.unions/'report.json'
+    report=json.loads(path.read_text())
+    if corruption=='subset_hash':
+        report['inputs']['forward_cache']='wrong'
+    elif corruption=='manifest':
+        args.manifest.write_text(args.manifest.read_text()+'\n')
+    else:
+        union=args.unions/'union_k8.jsonl'
+        rows=runner.read_rows(union)
+        extra=copy.deepcopy(rows[-1]);extra['source1_entity_id']='S1-0'
+        rows.append(extra)
+        union.write_text(''.join(json.dumps(r)+'\n' for r in rows))
+        report['unions']['8']['sha256']=runner.sha(union)
+    path.write_text(json.dumps(report))
+    with pytest.raises(ValueError):
+        runner.validation_only(args)
+    assert not args.output.exists()

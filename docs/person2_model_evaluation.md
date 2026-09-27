@@ -211,3 +211,11 @@ broken requirements. On this macOS environment the first suite invocation
 stalled when multiple OpenMP copies were loaded; the shared-library setting in
 the commands above resolved it. The baseline reproduction itself completed
 without that override and matched all historical metrics exactly.
+
+## Validation-only follow-up
+
+The completed `reverse_dev1000_v1` subset has now been evaluated with frozen
+models and thresholds. See [the explicitly scoped results](person2_validation_only_reverse.md).
+For the 47-feature model, K=1/3/8 score 0.900903/0.898848/0.897475 versus 0.909947
+forward. This is a validation-only candidate-pool diagnostic; the full-split
+retraining and competition-feature comparison above remains pending.

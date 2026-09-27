@@ -4,6 +4,9 @@ Run 24_feature_ablation.py first. Model/K selection and thresholds use calibrati
 all development results are exploratory. No production bundle is modified.
 """
 import argparse
+import csv
+import hashlib
+import io
 from collections import Counter, defaultdict
 import importlib
 import json
@@ -351,6 +354,139 @@ def summarize_forward(args):
     write_json(args.output, report)
 
 
+def validation_subset_hashes(args, split, forward):
+    """Reconstruct producer subset bytes from frozen inputs, without union labels.
+
+    Sample/raw-cache lines retain original bytes/order. Cache includes finalized
+    validation edges only. The producer TSV uses csv.writer CRLF; the subset split
+    uses JSON indent=2 plus newline. Exact expected hashes must match, not merely IDs.
+    """
+    ids = set(split['validation'])
+    keys = {pair_key(r) for r in forward if r['source1_entity_id'] in ids}
+    digest = lambda data: hashlib.sha256(data).hexdigest()
+    def filtered(path, predicate):
+        with path.open('rb') as stream:
+            return b''.join(line for line in stream if line.strip() and predicate(json.loads(line)))
+    sample = filtered(args.sample, lambda r: r['entity_id'] in ids)
+    cache = filtered(args.pairs, lambda r: pair_key(r) in keys)
+    out = io.StringIO(newline='')
+    with args.allowed.open(newline='') as stream:
+        reader = csv.DictReader(stream, delimiter='\t')
+        writer = csv.DictWriter(out, fieldnames=reader.fieldnames, delimiter='\t', lineterminator='\r\n')
+        writer.writeheader()
+        writer.writerows(r for r in reader if r['source1_entity_id'] in ids)
+    subset_split = (json.dumps({'validation': split['validation']}, indent=2) + '\n').encode()
+    return {'sample': digest(sample), 'pairs': digest(cache),
+            'allowed': digest(out.getvalue().encode()), 'split': digest(subset_split)}
+
+
+def validation_only(args):
+    """Frozen-model pool diagnostic: no fitting, threshold search or K selection."""
+    start = time.perf_counter()
+    queries, forward, split = control.load_inputs(args.sample, args.pairs, args.split, args.allowed)
+    full_hashes = input_hashes(args)
+    baseline_report = json.loads((args.baseline / 'report.json').read_text())
+    if any(baseline_report['inputs'][k]['sha256'] != v for k, v in full_hashes.items()):
+        raise ValueError('Frozen baseline input hashes differ')
+    producer = json.loads((args.unions / 'report.json').read_text())
+    manifest = json.loads(args.manifest.read_text())
+    if (sha(args.manifest) != producer['inputs']['reverse_manifest'] or
+            manifest != producer['reverse_manifest']):
+        raise ValueError('Standalone reverse manifest mismatch')
+    ids = split['validation']
+    if manifest['emitted_s1_count'] != len(ids):
+        raise ValueError('Reverse emission scope is not the frozen validation subset')
+    subset_hashes = validation_subset_hashes(args, split, forward)
+    subset_queries = {i: queries[i] for i in ids}
+    subset_forward = [r for r in forward if r['source1_entity_id'] in subset_queries]
+    unions, producer = completed_unions(args.unions, subset_hashes, subset_forward, subset_queries)
+    truth = {i: set(r['matches']) for i, r in queries.items()}
+    base_pool = candidate_sets(subset_forward)
+    models = {}
+    for label in ('baseline', 'name+address+views'):
+        bundle, extractor, model = load_bundle(args.baseline / label)
+        if any(bundle['inputs'][k]['sha256'] != v for k, v in full_hashes.items()):
+            raise ValueError('Frozen model bundle input hashes differ')
+        expected = PairFeatureExtractor(extractor.families).fit([queries[i] for i in split['train']])
+        if extractor.train_ids_sha256 != expected.train_ids_sha256:
+            raise ValueError('Model training IDs differ from frozen training split')
+        if (bundle['model_params'] != baseline_report['model_params'] or
+                bundle['threshold'] != baseline_report['runs'][label]['threshold']):
+            raise ValueError('Frozen model parameters/threshold differ')
+        # Re-score original calibration pool to prove the same fixed policy.
+        calibration = [r for r in forward if r['source1_entity_id'] in set(split['calibration'])]
+        frame = frame_for(calibration)
+        frame['score'] = model.predict_proba(feature_matrix(extractor, calibration, queries, False))[:, 1]
+        if evaluate(truth, predict(frame, bundle['threshold']), split['calibration']) != baseline_report['runs'][label]['calibration']:
+            raise ValueError('Frozen calibration metrics do not reproduce')
+        models[label] = (bundle, extractor, model)
+    args.output.mkdir(parents=True, exist_ok=False)
+    report = {'complete': False, 'status': 'EXPLORATORY_VALIDATION_ONLY',
+              'scope': {'mode': 'validation-only', 'validation_s1_count': len(ids),
+                        'validation_ids_sha256': hashlib.sha256(('\n'.join(ids)+'\n').encode()).hexdigest(),
+                        'full_split_comparison': False, 'model_retrained': False,
+                        'threshold_reselected': False, 'k_selected': False,
+                        'training_and_calibration_pool': 'original frozen forward only',
+                        'competition_features_trained': False},
+              'purpose': 'Frozen-model candidate-pool diagnostic on the original validation S1s only; not a retrained reverse-feature comparison.',
+              'production_promoted': False, 'full_input_hashes': full_hashes,
+              'subset_input_hashes': subset_hashes,
+              'subset_derivation': 'Original-order validation sample lines; original-order finalized validation cache lines; filtered TSV with csv CRLF; validation-only split JSON indent=2 plus newline. All four must match producer hashes.',
+              'producer_report_sha256': sha(args.unions/'report.json'),
+              'reverse_manifest_sha256': sha(args.manifest), 'reverse_manifest': manifest,
+              'union_sha256': {str(k): sha(args.unions/f'union_k{k}.jsonl') for k in unions},
+              'baseline_report_sha256': sha(args.baseline/'report.json'),
+              'model_params': baseline_report['model_params'], 'feature_version': VERSION,
+              'source_commit': subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip(),
+              'implementation_sha256': {p: sha(ROOT/p) for p in ('scripts/28_reverse_model_evaluation.py',
+                   'src/features/matching.py', 'src/features/competition.py', 'src/evaluate.py', 'src/predict.py')},
+              'versions': {p: version(p) for p in ('numpy','pandas','scikit-learn','xgboost','rapidfuzz','anyascii')},
+              'python': platform.python_version(), 'platform': platform.platform(),
+              'candidate_metrics': {}, 'models': {}, 'runs': {}}
+    pools = {'forward': subset_forward, **{f'union_k{k}': rows for k, rows in unions.items()}}
+    for pool_name, rows in pools.items():
+        pool = candidate_sets(rows)
+        report['candidate_metrics'][pool_name] = pool_metrics(truth, pool, ids)
+        report['candidate_metrics'][pool_name].update(
+            recovered_true_links=sum(len((truth[i] & pool.get(i,set())) - base_pool.get(i,set())) for i in ids),
+            lost_forward_edges=sum(len(base_pool.get(i,set()) - pool.get(i,set())) for i in ids))
+    for label, (bundle, extractor, model) in models.items():
+        report['models'][label] = {'model_sha256': bundle['model_sha256'],
+             'extractor_sha256': bundle['extractor_sha256'], 'threshold': bundle['threshold'],
+             'feature_names': bundle['feature_names'], 'feature_count': len(bundle['feature_names']),
+             'calibration': baseline_report['runs'][label]['calibration'],
+             'train_ids_sha256': extractor.train_ids_sha256}
+        base_pred = None
+        for pool_name, rows in pools.items():
+            tick = time.perf_counter()
+            values = feature_matrix(extractor, rows, queries, False)
+            feature_seconds = time.perf_counter()-tick
+            frame = frame_for(rows)
+            tick = time.perf_counter()
+            frame['score'] = model.predict_proba(values)[:,1]
+            prediction_seconds = time.perf_counter()-tick
+            predicted = predict(frame, bundle['threshold'])
+            metrics = evaluate(truth, predicted, ids)
+            if pool_name == 'forward':
+                base_pred = predicted
+                if metrics != baseline_report['runs'][label]['development']:
+                    raise ValueError('Frozen forward validation metrics do not reproduce')
+            name = label + '__' + pool_name
+            frame['selected'] = frame.score >= bundle['threshold']
+            frame.to_csv(args.output/(name+'.tsv'), sep='\t', index=False)
+            report['runs'][name] = {'model': label, 'pool': pool_name, 'validation': metrics,
+                'candidate_count': len(rows), 'threshold': bundle['threshold'],
+                'paired_vs_same_frozen_forward': control.paired_interval(truth, base_pred, predicted, ids),
+                'validation_slices': diagnostics(rows, truth, predicted, ids, queries, base_pool),
+                'runtime_seconds': {'feature_transform': feature_seconds, 'predict': prediction_seconds},
+                'runtime_scope': 'Validation pool only; excludes retrieval, calibration verification and I/O.'}
+            print(json.dumps({'run': name, 'validation': metrics}), flush=True)
+        # Prove evaluation did not modify either serialized model artifact.
+        load_bundle(args.baseline / label)
+    report.update(complete=True, total_seconds=time.perf_counter()-start)
+    write_json(args.output/'report.json', report)
+
+
 def score(args):
     bundle, extractor, model = load_bundle(args.bundle)
     queries = {r['entity_id']: r for r in read_rows(args.sample)}
@@ -383,6 +519,10 @@ if __name__ == '__main__':
     for name in ('sample', 'pairs', 'split', 'allowed', 'baseline', 'output'):
         p.add_argument('--' + name, required=True, type=Path)
     p.set_defaults(function=summarize_forward)
+    p = sub.add_parser('validation-only', help='Frozen models and thresholds; validation unions only, no retraining')
+    for name in ('sample', 'pairs', 'split', 'allowed', 'baseline', 'unions', 'manifest', 'output'):
+        p.add_argument('--' + name, required=True, type=Path)
+    p.set_defaults(function=validation_only)
     p = sub.add_parser('score')
     for name in ('bundle', 'sample', 'pairs', 'output'):
         p.add_argument('--' + name, required=True, type=Path)

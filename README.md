@@ -211,3 +211,10 @@ the frozen forward XGBoost controls exactly and provides a tested runner for
 K=1/3/8 reverse unions with target competition features. The measured 47-feature
 forward control scores 0.909947 exploratory development macro F0.5; the reverse
 comparison awaits completed union artifacts. Production bundles are unchanged.
+
+The completed `reverse_dev1000_v1` **validation-only** diagnostic is documented
+[here](docs/person2_validation_only_reverse.md). With unchanged 47-feature models
+and calibration threshold, reverse K=1/3/8 score 0.900903/0.898848/0.897475 versus
+0.909947 forward. Candidate recall improves, while precision and macro F0.5 fall.
+Training and calibration pools are unchanged; this is not a full-split retraining
+result. The explicit mode verifies exact subset provenance and validation scope.
