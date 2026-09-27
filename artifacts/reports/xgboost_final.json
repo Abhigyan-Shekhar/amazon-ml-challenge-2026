@@ -1,0 +1,65 @@
+{
+  "status": "final license-compliant local model; no upload performed",
+  "model": "xgboost.XGBClassifier",
+  "xgboost_version": "3.2.0",
+  "license": "Apache-2.0",
+  "parameters": {
+    "n_estimators": 200,
+    "max_depth": 4,
+    "learning_rate": 0.08,
+    "reg_lambda": 1.0,
+    "tree_method": "hist",
+    "random_state": 2026
+  },
+  "model_node_count": 5340,
+  "feature_count": 16,
+  "neutral_missing_address": true,
+  "uses_fuzzy": true,
+  "threshold": 0.645,
+  "threshold_source": "frozen 1000-S1 calibration split",
+  "dev": {
+    "s1": 1000,
+    "macro_F0.5": 0.8898400234877208,
+    "precision": 0.9666549666549666,
+    "recall": 0.7877574370709383
+  },
+  "confirmation": {
+    "s1": 2000,
+    "macro_F0.5": 0.8788479313620724,
+    "precision": 0.961121157323689,
+    "recall": 0.7817326077364318,
+    "threshold_tuned": false
+  },
+  "full_test": {
+    "s1_rows": 1732544,
+    "candidate_pairs": 44931896,
+    "predicted_links": 5166347,
+    "empty_match_rows": 133067,
+    "empty_candidate_rows": 1488,
+    "runtime_seconds": 3252.175520125,
+    "peak_retrieval_rss_gib": 5.0428466796875,
+    "matching_results_sha256": "4c57fceb0cf7a4397e716ef2a11ed130bed1eea4501bebfe35de4864229e9a1e",
+    "candidate_pairs_sha256": "7df91b204f6a34ee02c249ab4150671c966420bab4f72d9c581a031963829ae7"
+  },
+  "official_validation": {
+    "check_ids": true,
+    "required_s1": 1732544,
+    "valid_target_ids": 9969589,
+    "errors": 0,
+    "warnings": 0
+  },
+  "final_package": {
+    "path": "outputs/xgb_missing_address_final_submission.zip",
+    "size_bytes": 307267836,
+    "sha256": "2a137b2622e235c838f67936b6334790b8b7a1d8c6e27ff4751b7c7dcd5c36ac",
+    "source_git_commit": "463b6142371748b8c3d937473ff30b2dcec320e4",
+    "zip_integrity": "PASS"
+  },
+  "rejected_or_closed": {
+    "diacritic_folding": "rejected",
+    "embedding_model": "not promoted",
+    "unclear_manual_review_cases": "CLOSED_UNRESOLVED",
+    "external_business_lookup": false
+  },
+  "france_claim": "unlabeled diagnostics only; no France accuracy or F0.5 claim"
+}

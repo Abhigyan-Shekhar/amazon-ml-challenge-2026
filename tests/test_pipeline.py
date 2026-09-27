@@ -33,6 +33,24 @@ def test_split():
 def test_normalize():
     assert normalize('ÉCOLE—Paris, １２') == 'école paris 12'
 
+def test_missing_address_features_are_explicitly_missing():
+    import importlib.util
+    import math
+    from src.features.fuzzy import fuzzy_features
+    spec = importlib.util.spec_from_file_location('sample_experiment', 'scripts/12_sample_experiment.py')
+    experiment = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(experiment)
+    absent = experiment.cheap_features('acme', '', 'us', 'acme', '12 main', 'us', neutral_missing_address=True)
+    fuzzy_absent = fuzzy_features('acme', '', 'acme', '12 main', neutral_missing_address=True)
+    present_mismatch = experiment.cheap_features('acme', '10 main', 'us', 'acme', '12 main', 'us', neutral_missing_address=True)
+    assert absent[9] == 1 and present_mismatch[9] == 0
+    assert all(math.isnan(absent[i]) for i in (1, 3, 4, 5, 8))
+    assert all(math.isnan(fuzzy_absent[i]) for i in (1, 3, 5))
+    assert all(not math.isnan(present_mismatch[i]) for i in (1, 3, 4, 5, 8))
+    # The archived v1 checkpoint still gets its original feature schema.
+    assert experiment.cheap_features('acme', '', 'us', 'acme', '12 main', 'us')[1] == 0
+    assert fuzzy_features('acme', '', 'acme', '12 main')[1] == 0
+
 def records(rows):
     return prepare(pd.DataFrame(rows, columns=['entity_id','business_name','business_address','country']))
 

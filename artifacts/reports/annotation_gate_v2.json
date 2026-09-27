@@ -1,0 +1,68 @@
+{
+  "linkage_definition": "same real-world business entity, not merely same address or lexical overlap",
+  "source": "https://github.com/Siva402-ai/amazon-ml-challenge-2026/blob/main/PROBLEM_STATEMENT.md",
+  "counts": {
+    "false_negative_true_pair": {
+      "label_noise": 1,
+      "other": 16,
+      "ambiguous_shared_address": 3,
+      "missing_field_penalty": 6,
+      "transliteration_alias": 4
+    },
+    "false_positive": {
+      "ambiguous_shared_address": 7,
+      "coincidental_overlap": 14,
+      "missing_field_penalty": 1,
+      "other": 1
+    }
+  },
+  "other_groups": {
+    "address_number_conflict": 5,
+    "name_identity_ambiguous": 2,
+    "name_form_or_ocr": 6,
+    "partial_address": 1,
+    "mixed_address_script": 1,
+    "semantic_website_alias": 1
+  },
+  "other_label_valid_counts": {
+    "unclear": 7,
+    "yes": 9
+  },
+  "other_subtypes": {
+    "house_number_conflict": 3,
+    "name_variant_ambiguous": 2,
+    "legal_suffix_and_typo": 1,
+    "ocr_typo": 1,
+    "partial_address": 1,
+    "title_and_legal_form": 1,
+    "number_and_script_noise": 1,
+    "address_range_ambiguity": 1,
+    "numeric_segmentation": 1,
+    "honorific_and_legal_form": 1,
+    "accent_and_leading_zero": 1,
+    "website_name_alias": 1,
+    "organizational_designator": 1
+  },
+  "missed_alias_plus_semantic_valid": 6,
+  "missed_alias_plus_semantic_valid_share": 0.2,
+  "missed_embedding_upper_bound_if_unclear_other_count": 13,
+  "missed_embedding_upper_bound_if_unclear_other_share": 0.43333333333333335,
+  "missed_broad_name_lexical_gap": 11,
+  "missed_broad_name_lexical_gap_share": 0.36666666666666664,
+  "missed_label_noise_plus_ambiguous_address": 4,
+  "missed_label_noise_plus_ambiguous_address_share": 0.13333333333333333,
+  "gate_embedding_cleared": false,
+  "embedding_gate_status": "indeterminate",
+  "gate_ceiling_dominates": false,
+  "closure_decision": {
+    "status": "CLOSED_UNRESOLVED",
+    "unclear_row_count": 7,
+    "unclear_rows_description": "Seven false-negative true-pair rows in the other category have label_valid_under_spec=unclear. Cases involve phase typos, hospital unit designators, and similar boundary judgments where name and address fields alone are insufficient to establish same-entity identity under the challenge linkage definition.",
+    "resolution": "Under agreed team protocol: (1) no external business-record lookup, (2) no unverified embedding features, (3) no threshold retuning. The seven rows are formally closed as unresolved. The embedding gate remains indeterminate (not cleared, not failed).",
+    "embedding_gate_final": "indeterminate",
+    "gate_cleared": false,
+    "gate_action": "No embedding or external-record feature is promoted. Production model and threshold are unchanged.",
+    "decided_on": "2026-09-26",
+    "decided_by": "team protocol \u2014 explicit human review protocol exhausted under current dataset constraints"
+  }
+}

@@ -11,11 +11,12 @@ p=argparse.ArgumentParser();p.add_argument('--candidates',type=Path,required=Tru
 sample={r['entity_id']:r for r in map(json.loads,(a.candidates/'sample_s1.jsonl').read_text().splitlines())}
 prior=json.loads(a.original_split.read_text());assert not set(sample)&{i for ids in prior.values() for i in ids}
 truth={i:set(r['matches']) for i,r in sample.items()};query={i:(normalize(r['business_name']),normalize(r['business_address']),normalize(r['country'])) for i,r in sample.items()}
-pairs=pd.read_json(a.candidates/'pairs.jsonl',lines=True);features=np.asarray([exp.cheap_features(*query[r.source1_entity_id],normalize(r.target_name),normalize(r.target_address),normalize(r.target_country)) for r in pairs.itertuples()],dtype=np.float32)
-frozen=joblib.load(a.model)
+pairs=pd.read_json(a.candidates/'pairs.jsonl',lines=True);frozen=joblib.load(a.model)
+neutral_missing_address=bool(frozen.get('neutral_missing_address',False))
+features=np.asarray([exp.cheap_features(*query[r.source1_entity_id],normalize(r.target_name),normalize(r.target_address),normalize(r.target_country),neutral_missing_address=neutral_missing_address) for r in pairs.itertuples()],dtype=np.float32)
 if frozen.get('uses_fuzzy'):
  from src.features.fuzzy import fuzzy_features
- extra=np.asarray([fuzzy_features(query[r.source1_entity_id][0],query[r.source1_entity_id][1],normalize(r.target_name),normalize(r.target_address)) for r in pairs.itertuples()],dtype=np.float32)
+ extra=np.asarray([fuzzy_features(query[r.source1_entity_id][0],query[r.source1_entity_id][1],normalize(r.target_name),normalize(r.target_address),neutral_missing_address=neutral_missing_address) for r in pairs.itertuples()],dtype=np.float32)
  features=np.column_stack([features,extra])
 pairs['score']=frozen['model'].predict_proba(features)[:,1];pred=predict(pairs,frozen['threshold']);metrics=evaluate(truth,pred)
 pools=pairs.groupby('source1_entity_id').target_entity_id.agg(set).to_dict();metrics.update(blocking_metrics(truth,pools))

@@ -1,0 +1,22 @@
+{
+  "pair_count": 100000,
+  "repeats": 3,
+  "measurement": "HistGradientBoosting predict_proba on identical first 100000 saved validation pairs; v2 differs only by NaN address comparisons on missing pairs",
+  "excludes": [
+    "retrieval",
+    "feature construction",
+    "serialization"
+  ],
+  "v1_seconds": [
+    0.08467516699965927,
+    0.07470475000081933,
+    0.07250466600089567
+  ],
+  "v2_seconds": [
+    0.07238416700056405,
+    0.07386233299985179,
+    0.07321191699884366
+  ],
+  "v1_best_pairs_per_second": 1379221.5800120323,
+  "v2_best_pairs_per_second": 1381517.5907076579
+}

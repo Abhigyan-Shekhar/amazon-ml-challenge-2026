@@ -1,0 +1,102 @@
+{
+  "dev_validation_baseline": {
+    "s1_count": 1000,
+    "final_pairs": 24758,
+    "candidate": {
+      "candidate_pair_recall": 0.937929061784897,
+      "entity_complete_coverage": 0.83,
+      "matched_entity_complete_coverage": 0.820675105485232
+    },
+    "metrics_at_frozen_threshold_0.585": {
+      "macro_F0.5": 0.8921459851737235,
+      "precision": 0.9627200552295478,
+      "recall": 0.7977688787185355,
+      "singleton_F0.5": 0.9230769230769231,
+      "matched_F0.5": 0.8904493514490754,
+      "multi_match_F0.5": 0.8971770861846659
+    },
+    "threshold": 0.585
+  },
+  "dev_validation_folded": {
+    "s1_count": 1000,
+    "final_pairs": 24939,
+    "candidate": {
+      "candidate_pair_recall": 0.9442219679633868,
+      "entity_complete_coverage": 0.847,
+      "matched_entity_complete_coverage": 0.8386075949367089
+    },
+    "metrics_at_frozen_threshold_0.585": {
+      "macro_F0.5": 0.8942650976768663,
+      "precision": 0.9621472814865795,
+      "recall": 0.799771167048055,
+      "singleton_F0.5": 0.9230769230769231,
+      "matched_F0.5": 0.8926847021907874,
+      "multi_match_F0.5": 0.8984359303951754
+    },
+    "threshold": 0.585
+  },
+  "calibration_thresholds": {
+    "baseline": 0.5849999999999999,
+    "folded": 0.6149999999999999
+  },
+  "dev_validation_calibration_thresholds": {
+    "baseline": {
+      "macro_F0.5": 0.8921459851737235,
+      "precision": 0.9627200552295478,
+      "recall": 0.7977688787185355,
+      "singleton_F0.5": 0.9230769230769231,
+      "matched_F0.5": 0.8904493514490754,
+      "multi_match_F0.5": 0.8971770861846659
+    },
+    "folded": {
+      "macro_F0.5": 0.8943489726731909,
+      "precision": 0.9646201873048907,
+      "recall": 0.7954805491990846,
+      "singleton_F0.5": 0.9230769230769231,
+      "matched_F0.5": 0.8927731779253069,
+      "multi_match_F0.5": 0.8985302779725933
+    }
+  },
+  "confirmation_baseline": {
+    "s1_count": 2000,
+    "final_pairs": 49326,
+    "candidate": {
+      "candidate_pair_recall": 0.9223415208118841,
+      "entity_complete_coverage": 0.7945,
+      "matched_entity_complete_coverage": 0.7800963081861958
+    },
+    "metrics_at_frozen_threshold_0.585": {
+      "macro_F0.5": 0.8774113486667228,
+      "precision": 0.9521116805089238,
+      "recall": 0.7924694808060009,
+      "singleton_F0.5": 0.8702290076335878,
+      "matched_F0.5": 0.8779147658284888,
+      "multi_match_F0.5": 0.8912277769888871
+    },
+    "threshold": 0.585
+  },
+  "confirmation_folded": {
+    "s1_count": 2000,
+    "final_pairs": 49669,
+    "candidate": {
+      "candidate_pair_recall": 0.9257243712310634,
+      "entity_complete_coverage": 0.803,
+      "matched_entity_complete_coverage": 0.7891920813269128
+    },
+    "metrics_at_frozen_threshold_0.585": {
+      "macro_F0.5": 0.8776920775625834,
+      "precision": 0.9520282186948854,
+      "recall": 0.7939402853360789,
+      "singleton_F0.5": 0.8702290076335878,
+      "matched_F0.5": 0.8782151712815229,
+      "multi_match_F0.5": 0.8915476959585288
+    },
+    "threshold": 0.585
+  },
+  "decision": {
+    "promote_diacritic_folding": false,
+    "selected_pipeline": "missing-address v2 baseline",
+    "selected_threshold": 0.585,
+    "reason": "Latin diacritic folding improved candidate recall on both splits, but the end-to-end macro F0.5 gain was small on dev and negligible on the disjoint confirmation split at the frozen threshold. The folded calibration threshold was not evaluated on confirmation, so there is insufficient robust evidence to promote the variant."
+  }
+}

@@ -3,7 +3,7 @@
 Exact name-core OR address-token-set blocks; top K per source by token overlap;
 only the finalized heap is passed to the frozen matcher and exported.
 """
-import argparse,csv,hashlib,heapq,json,math,sys,time,os
+import argparse,csv,hashlib,heapq,json,math,sys,time,os,subprocess
 from collections import defaultdict
 from pathlib import Path
 import joblib
@@ -28,14 +28,32 @@ def run(root,model_dir,output,budget,memory_gib,method,tree_dir=None,max_key_fre
     if method != 'cheap_logistic': raise ValueError('This runtime currently supports the benchmarked cheap logistic fallback only')
     k=bundle['k_per_source'];threshold=report['results'][method]['threshold'];pipeline=bundle['cheap_model']
     scaler=pipeline.named_steps['standardscaler'];lr=pipeline.named_steps['logisticregression'];weights=lr.coef_[0]/scaler.scale_;bias=float(lr.intercept_[0]-np.dot(weights,scaler.mean_))
-    manifest={'experiment_id':model_dir.name,'model_name':method,'checkpoint_path':str((model_dir/'lexical_model.joblib').resolve()),'checkpoint_sha256':hashlib.sha256((model_dir/'lexical_model.joblib').read_bytes()).hexdigest(),'model_parameter_count':int(lr.coef_.size+lr.intercept_.size),'model_license':'no pretrained model; scikit-learn BSD-3-Clause','candidate_config':{'method':'exact name core OR address token set','k_per_source':k,'ranking':'max(0.65*name_jaccard+0.30*address_jaccard+0.05*name_exact,0.85*address_jaccard+0.15*name_jaccard)','tie_break':'descending target entity ID'},'normalization_config':'NFKC lowercase punctuation spaces; legal suffix removal only in blocking key','retrieval_config':'exact-core/address inverted S1 index; no country filter','RRF_config':None,'feature_config':experiment.FEATURES[3:13],'threshold':threshold,'validation_macro_F0.5':report['results'][method]['validation']['macro_F0.5'],'validation_slices':report['results'][method]['slices'],'random_seeds':[2026,2027],'git_commit':report['git_commit'],'neural_compliance':'not applicable: no pretrained neural model used','selected_as':'runtime-feasible full-test fallback, not necessarily best sample model','test_inputs':{p.name:{'size':p.stat().st_size,'mtime_ns':p.stat().st_mtime_ns} for p in root.glob('test_source*.tsv')}}
+    manifest={'experiment_id':model_dir.name,'model_name':method,'checkpoint_path':str((model_dir/'lexical_model.joblib').resolve()),'checkpoint_sha256':hashlib.sha256((model_dir/'lexical_model.joblib').read_bytes()).hexdigest(),'model_parameter_count':int(lr.coef_.size+lr.intercept_.size),'model_license':'no pretrained model; scikit-learn BSD-3-Clause','candidate_config':{'method':'exact name core OR address token set','k_per_source':k,'ranking':'max(0.65*name_jaccard+0.30*address_jaccard+0.05*name_exact,0.85*address_jaccard+0.15*name_jaccard)','tie_break':'descending target entity ID'},'normalization_config':'NFKC lowercase punctuation spaces; legal suffix removal only in blocking key','retrieval_config':'exact-core/address inverted S1 index; no country filter','RRF_config':None,'feature_config':experiment.FEATURES[3:13],'threshold':threshold,'validation_macro_F0.5':report['results'][method]['validation']['macro_F0.5'],'validation_slices':report['results'][method]['slices'],'random_seeds':[2026,2027],'candidate_validation_git_commit':report['git_commit'],'inference_git_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'neural_compliance':'not applicable: no pretrained neural model used','selected_as':'runtime-feasible full-test fallback, not necessarily best sample model','test_inputs':{p.name:{'size':p.stat().st_size,'mtime_ns':p.stat().st_mtime_ns} for p in root.glob('test_source*.tsv')}}
     if structured:
-        tree=joblib.load(tree_dir/'model.joblib');tree_report=json.loads((tree_dir/'validation.json').read_text())
-        if not tree_report.get('cheap_only'):raise ValueError('Full streaming tree requires token-only model')
-        threshold=tree['threshold'];tree_model=tree['model'];uses_fuzzy=bool(tree.get('uses_fuzzy',False))
+        tree=joblib.load(tree_dir/'model.joblib')
+        report_path=tree_dir/'validation.json'
+        if not report_path.exists():report_path=tree_dir/'report.json'
+        tree_report=json.loads(report_path.read_text())
+        threshold=tree['threshold'];tree_model=tree['model'];uses_fuzzy=bool(tree.get('uses_fuzzy',False));neutral_missing_address=bool(tree.get('neutral_missing_address',False))
         if uses_fuzzy:
             from src.features.fuzzy import fuzzy_features,NAMES as FUZZY_NAMES
-        manifest.update({'model_name':'structured_cheap_tree','checkpoint_path':str((tree_dir/'model.joblib').resolve()),'checkpoint_sha256':hashlib.sha256((tree_dir/'model.joblib').read_bytes()).hexdigest(),'threshold':threshold,'validation_macro_F0.5':tree_report['validation']['macro_F0.5'],'validation_slices':tree_report['slices'],'model_parameter_count':1+sum(len(t.nodes) for iteration in tree_model._predictors for t in iteration),'parameter_count_method':'numeric split thresholds and leaf values plus base logit; not a neural model','candidate_config':{'method':'structured name/address keys, capped by full S1 key frequency','k_per_source':k,'max_key_frequency':max_key_frequency,'ranking':'max name/address token score'},'selected_as':'validated structured token-feature tree','retrieval_config':'bounded hashed query-key index; no country filter'})
+        model_module=tree_model.__class__.__module__
+        if model_module.startswith('xgboost'):
+            def count_nodes(node):
+                return 1+sum(count_nodes(child) for child in node.get('children',[]))
+            dumped=[json.loads(raw) for raw in tree_model.get_booster().get_dump(dump_format='json')]
+            parameter_count=sum(count_nodes(tree_json) for tree_json in dumped)
+            model_name='xgboost.XGBClassifier'
+            model_license='Apache-2.0'
+            parameter_method='total decision and leaf nodes across serialized boosted trees; non-neural model'
+        else:
+            parameter_count=1+sum(len(t.nodes) for iteration in tree_model._predictors for t in iteration)
+            model_name='sklearn.HistGradientBoostingClassifier'
+            model_license='BSD-3-Clause'
+            parameter_method='numeric split thresholds and leaf values plus base logit; non-neural model'
+        validation=tree_report.get('validation',tree_report.get('dev'))
+        if validation is None:raise ValueError('Classifier report lacks validation/dev metrics')
+        manifest.update({'model_name':model_name,'model_license':model_license,'structured_model':True,'checkpoint_path':str((tree_dir/'model.joblib').resolve()),'checkpoint_sha256':hashlib.sha256((tree_dir/'model.joblib').read_bytes()).hexdigest(),'threshold':threshold,'validation_macro_F0.5':validation['macro_F0.5'],'validation_slices':tree_report.get('slices',{}),'model_parameter_count':parameter_count,'parameter_count_method':parameter_method,'candidate_config':{'method':'structured name/address keys, capped by full S1 key frequency','k_per_source':k,'max_key_frequency':max_key_frequency,'ranking':'max name/address token score'},'selected_as':'validated structured 16-feature classifier','retrieval_config':'bounded hashed query-key index; no country filter','neutral_missing_address':neutral_missing_address})
     if structured and uses_fuzzy:
         manifest['feature_config']=experiment.FEATURES[3:13]+FUZZY_NAMES
         manifest['uses_fuzzy']=True
@@ -114,7 +132,7 @@ def run(root,model_dir,output,budget,memory_gib,method,tree_dir=None,max_key_fre
             records=[r for si in (0,1) for _,r in sorted(heaps[si][qi],reverse=True)]
             tids=[r[0] for r in records]
             if len(tids)!=len(set(tids)):raise ValueError('Duplicate target')
-            feature_rows.extend(experiment.cheap_features(qn,qa,qc,r[1],r[2],r[3])+(fuzzy_features(qn,qa,r[1],r[2]) if uses_fuzzy else []) for r in records);pending.append((eid,tids));heaps[0][qi].clear();heaps[1][qi].clear()
+            feature_rows.extend(experiment.cheap_features(qn,qa,qc,r[1],r[2],r[3],neutral_missing_address=neutral_missing_address)+(fuzzy_features(qn,qa,r[1],r[2],neutral_missing_address=neutral_missing_address) if uses_fuzzy else []) for r in records);pending.append((eid,tids));heaps[0][qi].clear();heaps[1][qi].clear()
             if len(feature_rows)>=20000 or len(pending)>=5000:flush()
             if qi%100000==0:
                 print(json.dumps({'scored_s1':qi,'pairs':pair_count,'matches':matches,'total_seconds':time.monotonic()-start}),flush=True)

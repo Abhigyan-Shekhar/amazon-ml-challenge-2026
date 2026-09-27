@@ -1,0 +1,86 @@
+{
+  "feature_schema": "original 16 columns; absent address comparisons = NaN, address_missing retained",
+  "train_pairs": 74658,
+  "threshold": 0.5849999999999999,
+  "dev": {
+    "macro_F0.5": 0.8921459851737235,
+    "precision": 0.9627200552295478,
+    "recall": 0.7977688787185355,
+    "singleton_F0.5": 0.9230769230769231,
+    "matched_F0.5": 0.8904493514490754,
+    "multi_match_F0.5": 0.8971770861846659
+  },
+  "confirmation": {
+    "macro_F0.5": 0.8774113486667228,
+    "precision": 0.9521116805089238,
+    "recall": 0.7924694808060009,
+    "singleton_F0.5": 0.8702290076335878,
+    "matched_F0.5": 0.8779147658284888,
+    "multi_match_F0.5": 0.8912277769888871
+  },
+  "dev_at_old_threshold": {
+    "macro_F0.5": 0.8899134188499301,
+    "precision": 0.9653846153846154,
+    "recall": 0.7897597254004577,
+    "singleton_F0.5": 0.9230769230769231,
+    "matched_F0.5": 0.888094323681361,
+    "multi_match_F0.5": 0.8946657629857983
+  },
+  "confirmation_at_old_threshold": {
+    "macro_F0.5": 0.8776747017255137,
+    "precision": 0.9591873426824883,
+    "recall": 0.7846742167965878,
+    "singleton_F0.5": 0.8778625954198473,
+    "matched_F0.5": 0.8776615320765261,
+    "multi_match_F0.5": 0.8909580938650021
+  },
+  "original_515_above_0.64": 17,
+  "original_missed_count": 515,
+  "cheap_only": true,
+  "uses_fuzzy": true,
+  "neutral_missing_address": true,
+  "checkpoint_sha256": "ea1d59608a52697c79505840952ea997092a7f998077c273e4a48c8897b694cb",
+  "confirmation_slices": {
+    "India": {
+      "macro_F0.5": 0.837587417484336,
+      "precision": 0.9148936170212766,
+      "recall": 0.7575757575757576,
+      "singleton_F0.5": 0.8,
+      "matched_F0.5": 0.8402897808328829,
+      "multi_match_F0.5": 0.8497245331249083
+    },
+    "US": {
+      "macro_F0.5": 0.9050856059290593,
+      "precision": 0.9785433665760048,
+      "recall": 0.8174703357737945,
+      "singleton_F0.5": 0.9210526315789473,
+      "matched_F0.5": 0.9039864266270745,
+      "multi_match_F0.5": 0.9206477979557582
+    },
+    "S2-": {
+      "macro_F0.5": 0.8427709966032548,
+      "precision": 0.951543431442929,
+      "recall": 0.802360774818402,
+      "singleton_F0.5": 0.9324324324324325,
+      "matched_F0.5": 0.8271960054028813,
+      "multi_match_F0.5": 0.889858593182948
+    },
+    "S3-": {
+      "macro_F0.5": 0.8471956104517895,
+      "precision": 0.9526627218934911,
+      "recall": 0.7831187410586552,
+      "singleton_F0.5": 0.9256505576208178,
+      "matched_F0.5": 0.8350035938206695,
+      "multi_match_F0.5": 0.8775564671388738
+    }
+  },
+  "confirmation_provenance": {
+    "s1_count": 2000,
+    "singleton_count": 131,
+    "status": "fresh disjoint confirmation, no fitting or threshold tuning",
+    "bootstrap_95pct_interval": [
+      0.8680861797501291,
+      0.8870605312552524
+    ]
+  }
+}

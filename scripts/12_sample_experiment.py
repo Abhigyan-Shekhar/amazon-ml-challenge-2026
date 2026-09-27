@@ -16,12 +16,16 @@ from src.split import grouped_split
 
 FEATURES=['combined_cosine','name_cosine','address_cosine','name_jaccard','address_jaccard','name_exact','address_exact','numeric_jaccard','numeric_conflict','country_match','name_length_ratio','address_length_ratio','address_missing','name_address_product']
 
-def cheap_features(qn,qa,qc,tn,ta,tc):
+def cheap_features(qn,qa,qc,tn,ta,tc,neutral_missing_address=False):
     qnt,tnt=set(qn.split()),set(tn.split());qat,tat=set(qa.split()),set(ta.split())
     qnum={t for t in qat if any(c.isdigit() for c in t)};tnum={t for t in tat if any(c.isdigit() for c in t)}
     jac=lambda a,b:len(a&b)/max(1,len(a|b))
     ratio=lambda a,b:min(len(a),len(b))/max(1,len(a),len(b))
-    return [jac(qnt,tnt),jac(qat,tat),float(qn==tn),float(bool(qa) and qa==ta),jac(qnum,tnum),float(bool(qnum and tnum) and not qnum&tnum),float(qc==tc),ratio(qn,tn),ratio(qa,ta),float(not qa or not ta)]
+    values=[jac(qnt,tnt),jac(qat,tat),float(qn==tn),float(bool(qa) and qa==ta),jac(qnum,tnum),float(bool(qnum and tnum) and not qnum&tnum),float(qc==tc),ratio(qn,tn),ratio(qa,ta),float(not qa or not ta)]
+    if neutral_missing_address and (not qa or not ta):
+        for index in (1,3,4,5,8):
+            values[index]=float('nan')
+    return values
 
 def run(directory,output,ranking="char",k=50):
     output.mkdir(parents=True,exist_ok=False);start=time.monotonic()
