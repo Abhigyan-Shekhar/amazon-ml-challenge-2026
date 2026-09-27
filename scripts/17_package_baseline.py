@@ -51,7 +51,7 @@ code_readme = (
     "**Approach:** Structured candidate blocking + HistGradientBoosting with missing-address handling\n"
     "**Selected Threshold:** 0.585\n\n"
     "## 1. Environment Setup\n\n"
-    "Requires Python 3.8+ (tested on Python 3.10 / 3.11 / 3.13):\n"
+    "Requires Python 3.10+ (tested on Python 3.10 / 3.11 / 3.13):\n"
     "```bash\n"
     "pip install -r requirements.txt\n"
     "```\n\n"
@@ -106,4 +106,3 @@ with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslev
             z.write(a.run / name, arcname=f"{code_base}/{name}")
 
 print('Created', archive, 'bytes', archive.stat().st_size, flush=True)
-

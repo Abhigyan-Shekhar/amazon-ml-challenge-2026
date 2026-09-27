@@ -6,7 +6,7 @@ This repository contains the completed audit, experiments, reproducible scripts,
 
 Archived v1 full-test package: `outputs/fuzzy_tree_v1_submission.zip` (**291.8 MB**, after final documentation refresh and recompression). Both TSVs contain **1,732,544 rows**. The model scored **44,931,896 candidates**, selected **5,196,796 links**, and left **131,317** S1 match lists empty. Runtime: **2,165.16 seconds (36.1 minutes)**; peak measured retrieval RSS: **7.55 GiB**. See [official validation](artifacts/reports/fuzzy_official_validation.json) and [runtime](artifacts/reports/fuzzy_runtime.json). The test partition has **9,969,589 targets**; 10,320,219 is the training target count.
 
-Selected local v2 package: `outputs/fuzzy_missing_address_v2_submission.zip` (**308.2 MB**). Official validation checked all 1,732,544 S1 rows and all target IDs with **zero errors and zero warnings**. The archive includes the v2 checkpoint, output TSVs, manifests, methodology, and runnable repository code. **Explicit human approval is required before any leaderboard upload.**
+Selected local v2 package: `outputs/fuzzy_missing_address_v2_submission.zip`. Official validation checked all 1,732,544 S1 rows and all target IDs with **zero errors and zero warnings**. The ZIP follows the challenge layout: `output/` contains the two TSVs, `Documentation_template.md` is at the archive root, and `code/business_entity_resolution/` contains the runnable code, pinned requirements, example config, checkpoint, and run manifests. The source template is [Documentation_template.md](Documentation_template.md). **Explicit human approval is required before any leaderboard upload.**
 
 ### Missing-address v2 promotion
 
@@ -141,6 +141,8 @@ python scripts/20_confirm_frozen.py --candidates artifacts/candidates/confirmati
 PYTHONHASHSEED=2026 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python scripts/18_full_structured.py --test-dir /path/to/resources/test --model-dir artifacts/experiments/new_capped --tree-dir artifacts/experiments/new_missing_address_v2 --max-key-frequency 10 --output outputs/new_missing_address_v2 --budget-seconds 4200 --memory-gib 10
 python scripts/17_package_baseline.py --run outputs/new_missing_address_v2 --test-dir /path/to/resources/test
 ```
+
+The packaging command validates both output files with full ID checks before writing the archive. It defaults to `BlackList_submission.zip`; use `--archive-name fuzzy_missing_address_v2_submission.zip` to reproduce the named v2 artifact. The archive contains only the official output folder, the completed documentation template, and the self-contained code folder described above. All Python dependencies in `requirements.txt` are pinned to exact versions.
 
 The `--missed` file only produces the historical 515-pair diagnostic count; it does not affect model fitting or threshold selection. Generate the independent confirmation sample first if those frozen local artifacts are unavailable.
 
