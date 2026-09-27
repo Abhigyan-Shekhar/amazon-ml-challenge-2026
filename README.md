@@ -193,7 +193,7 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 - [x] Run full-test XGBoost inference within the 4,200-second and 10-GiB gates.
 - [x] Run the official validator with full ID checking for all 1,732,544 S1 rows and 9,969,589 target IDs.
 - [x] Keep diacritic folding rejected, embeddings unpromoted, and the seven unclear annotations closed unresolved without external lookups.
-- [x] Build and hash the final XGBoost ZIP from frozen source commit `463b6142371748b8c3d937473ff30b2dcec320e4`; SHA-256 `2a137b2622e235c838f67936b6334790b8b7a1d8c6e27ff4751b7c7dcd5c36ac`.
+- [x] Build and validate the final 10k XGBoost submission package. The final archive SHA-256 is recorded externally after packaging.
 - [ ] Obtain explicit human approval before any leaderboard or final-package upload.
 
 France has no supplied labels, so no France F0.5, precision, recall, or accuracy is claimed. Future retrieval research is outside the frozen submission pipeline.
