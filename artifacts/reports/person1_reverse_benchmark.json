@@ -1,0 +1,163 @@
+{
+  "purpose": "Runtime and exact emitted-edge parity only; not candidate recall or model accuracy",
+  "index": {
+    "version": "reverse-char3-address-word-v1",
+    "normalization": "unicode-nfkc-lower-punctuation-space-v1",
+    "name_weight": 0.5,
+    "s1_count": 2206821,
+    "s1_sha256": "591af0e1dfeb65cab71ea6ee8cb69df00f92d6ba6fa79e05746c938775d14973",
+    "idf_fit": "All S1 rows, without labels; no hard country partition",
+    "name_vocabulary": 16871,
+    "address_vocabulary": 192914,
+    "nnz": 47159211,
+    "shape": [
+      209785,
+      2206821
+    ],
+    "artifacts": {
+      "ids.npy": "4fd319628497e8a26b829f1020a1a9b4d5cb2b0894256beebee35aaa340d3eae",
+      "index_transposed.npz": "bc8ed3504e9fd662928ecf8aeac42d38deb48b1e5fd9e697cbf9bde7152d708b",
+      "vectorizers.joblib": "6a63f1513c4b3c0d5ed05bbc7e85c2576fb3797ecdba1822ef11c6767baa719c"
+    },
+    "versions": {
+      "numpy": "2.4.3",
+      "scipy": "1.17.1",
+      "scikit-learn": "1.8.0",
+      "sparse-dot-topn": "1.2.0"
+    },
+    "seconds": 40.31832058399959,
+    "rss_gib": 1.6313629150390625,
+    "complete": true
+  },
+  "benchmarks": {
+    "reverse_benchmark_v1": {
+      "version": "reverse-char3-address-word-v1",
+      "complete": false,
+      "benchmark_only": true,
+      "s1_competitors": 2206821,
+      "emitted_s1_count": 5000,
+      "sample_sha256": "c8c327c7340243e966a428d47e75a2d3a808b93f2712474c7fed8631b6a4db81",
+      "index_manifest_sha256": "9075790a1e37d094c84667446d9bf1858688ece436292e8b66ba296a770cd30e",
+      "target_hashes": {
+        "train_source2.tsv": "6336c1a055eec79cf8a6d99fdc8d32a2e4d9dc2662e00963cb35d66b89ed09ed",
+        "train_source3.tsv": "67da22f5151898ff3006febd836c1a159e97ae95efa7257a5aff4fda685e58e9"
+      },
+      "k": 8,
+      "score_floor_strict": 0.35,
+      "threads": 2,
+      "tie_policy": "competition rank; retain all top-k boundary ties",
+      "scanned_targets": 20000,
+      "globally_scored_targets": 2792,
+      "edges": 553,
+      "timings": {
+        "transform": 0.2849360020045424,
+        "retrieve": 52.801606959998026,
+        "write": 0.04201941400242504
+      },
+      "peak_observed_rss_gib": 1.471923828125,
+      "seconds": 55.410384499999054,
+      "rss_gib": 0.923248291015625,
+      "forward_pairs_sha256": "0f3aaeddb54a5dae112ebd8a1b17990fa15517725d4d133c9ee811684a8b83f0",
+      "context_sha256": "ee6268f00918074f0c6ed06cd257b9d266988c9e961c595505e77711aa05ec4f",
+      "pairs_sha256": "96a9a2fb23bcbd1431e4cb6cbcea89894ee5686799256252ae87992d873f2f44"
+    },
+    "reverse_benchmark_witness_v1": {
+      "version": "reverse-char3-address-word-v1",
+      "complete": false,
+      "benchmark_only": true,
+      "s1_competitors": 2206821,
+      "emitted_s1_count": 5000,
+      "sample_sha256": "c8c327c7340243e966a428d47e75a2d3a808b93f2712474c7fed8631b6a4db81",
+      "index_manifest_sha256": "9075790a1e37d094c84667446d9bf1858688ece436292e8b66ba296a770cd30e",
+      "target_hashes": {
+        "train_source2.tsv": "6336c1a055eec79cf8a6d99fdc8d32a2e4d9dc2662e00963cb35d66b89ed09ed",
+        "train_source3.tsv": "67da22f5151898ff3006febd836c1a159e97ae95efa7257a5aff4fda685e58e9"
+      },
+      "k": 8,
+      "score_floor_strict": 0.35,
+      "threads": 2,
+      "witness_stride": 32,
+      "tie_policy": "competition rank; retain all top-k boundary ties",
+      "scanned_targets": 20000,
+      "globally_scored_targets": 2180,
+      "edges": 553,
+      "timings": {
+        "transform": 0.29332966599963584,
+        "retrieve": 46.05568349699979,
+        "write": 0.0628552480000053
+      },
+      "peak_observed_rss_gib": 1.41815185546875,
+      "seconds": 48.72066441599986,
+      "rss_gib": 0.8890838623046875,
+      "forward_pairs_sha256": "0f3aaeddb54a5dae112ebd8a1b17990fa15517725d4d133c9ee811684a8b83f0",
+      "context_sha256": "056dd22b57ac613dee46e73cc8b3b14d17105646a675b503c7e1996a76c0f98d",
+      "pairs_sha256": "96a9a2fb23bcbd1431e4cb6cbcea89894ee5686799256252ae87992d873f2f44"
+    },
+    "reverse_benchmark_witness4_v1": {
+      "version": "reverse-char3-address-word-v1",
+      "complete": false,
+      "benchmark_only": true,
+      "s1_competitors": 2206821,
+      "emitted_s1_count": 5000,
+      "sample_sha256": "c8c327c7340243e966a428d47e75a2d3a808b93f2712474c7fed8631b6a4db81",
+      "index_manifest_sha256": "9075790a1e37d094c84667446d9bf1858688ece436292e8b66ba296a770cd30e",
+      "target_hashes": {
+        "train_source2.tsv": "6336c1a055eec79cf8a6d99fdc8d32a2e4d9dc2662e00963cb35d66b89ed09ed",
+        "train_source3.tsv": "67da22f5151898ff3006febd836c1a159e97ae95efa7257a5aff4fda685e58e9"
+      },
+      "k": 8,
+      "score_floor_strict": 0.35,
+      "threads": 4,
+      "witness_stride": 32,
+      "tie_policy": "competition rank; retain all top-k boundary ties",
+      "scanned_targets": 20000,
+      "globally_scored_targets": 2180,
+      "edges": 553,
+      "timings": {
+        "transform": 0.28772795600025347,
+        "retrieve": 44.372112960000095,
+        "write": 0.04669387800095137
+      },
+      "peak_observed_rss_gib": 1.40386962890625,
+      "identity": {
+        "index": "9075790a1e37d094c84667446d9bf1858688ece436292e8b66ba296a770cd30e",
+        "sample": "c8c327c7340243e966a428d47e75a2d3a808b93f2712474c7fed8631b6a4db81",
+        "forward": "0f3aaeddb54a5dae112ebd8a1b17990fa15517725d4d133c9ee811684a8b83f0",
+        "s2": "6336c1a055eec79cf8a6d99fdc8d32a2e4d9dc2662e00963cb35d66b89ed09ed",
+        "s3": "67da22f5151898ff3006febd836c1a159e97ae95efa7257a5aff4fda685e58e9",
+        "k": 8,
+        "floor": 0.35,
+        "witness_stride": 32,
+        "version": "reverse-char3-address-word-v1",
+        "max_targets_per_source": 10000,
+        "code": {
+          "26_reverse_retrieval.py": "85e85bc1da50f65150c9d64e87c64df76d68fc541b424ca8f7686d9271c28e5f",
+          "reverse.py": "158344ee43610c780ee04fe65068eb2f80427222a2967a59f7f0a7272a7a0bda"
+        }
+      },
+      "scanned_by_source": {
+        "s2": 10000,
+        "s3": 10000
+      },
+      "seconds": 47.330128709000064,
+      "rss_gib": 0.966400146484375,
+      "forward_pairs_sha256": "0f3aaeddb54a5dae112ebd8a1b17990fa15517725d4d133c9ee811684a8b83f0",
+      "context_sha256": "056dd22b57ac613dee46e73cc8b3b14d17105646a675b503c7e1996a76c0f98d",
+      "pairs_sha256": "96a9a2fb23bcbd1431e4cb6cbcea89894ee5686799256252ae87992d873f2f44"
+    }
+  },
+  "full_run_configuration": {
+    "threads": 2,
+    "witness_stride": 32,
+    "k": 8,
+    "floor": 0.35,
+    "sample_s1": 5000
+  },
+  "full_run_reason": "Four threads did not materially improve throughput; use two to leave capacity for other work.",
+  "limitations": [
+    "Prefix benchmark excludes most targets; no recall claim.",
+    "RSS measured between batches, not instantaneous peak.",
+    "Full union recall evaluation pending the complete target scan."
+  ],
+  "all_benchmark_reverse_edges_identical": true
+}
