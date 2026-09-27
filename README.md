@@ -203,3 +203,11 @@ Person 1's versioned extractor and controlled XGBoost ablations are documented i
 **0.889840** for the reproduced 16-feature control. These are exploratory results
 with higher feature-extraction cost; fresh confirmation and full-runtime checks
 are required before production promotion. Existing production packages are unchanged.
+
+## Reverse-union model evaluation
+
+Person 2's [model-evaluation handoff](docs/person2_model_evaluation.md) reproduces
+the frozen forward XGBoost controls exactly and provides a tested runner for
+K=1/3/8 reverse unions with target competition features. The measured 47-feature
+forward control scores 0.909947 exploratory development macro F0.5; the reverse
+comparison awaits completed union artifacts. Production bundles are unchanged.
