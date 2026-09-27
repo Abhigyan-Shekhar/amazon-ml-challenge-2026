@@ -27,7 +27,7 @@ Exploratory analysis showed several recurring sources of difficulty:
 - Very common blocking keys create large candidate sets while contributing limited discriminative value.
 - Singleton entities are important because predicting an incorrect match directly hurts precision under the F_0.5 evaluation metric.
 
-A retrieval error analysis on 5,000 sampled Source-1 entities found a raw blocker pair recall of approximately **92.65%**. A capped end-to-end candidate-generation experiment achieved approximately **93.79% candidate pair recall**, showing that candidate generation is a major determinant of the downstream model's recall ceiling.
+The selected larger-training experiment used 16,000 labeled S1 groups: 10,000 train, 2,000 calibration, 2,000 development, and 2,000 fresh confirmation. Its capped candidate recall was **92.238%** on development and **91.745%** on confirmation.
 
 ### 2.2 Solution Strategy
 
@@ -51,7 +51,7 @@ Candidate generation reduces the otherwise impractical Cartesian comparison betw
 - **Maximum blocking-key frequency:** 10
 - **Candidate cap:** Up to 20 candidates per target source for the capped retrieval configuration.
 - **Full-test candidate pairs generated:** **44,931,896**
-- **Measured candidate pair recall on the capped validation experiment:** approximately **93.79%**
+- **Measured candidate pair recall:** **92.238%** on development and **91.745%** on confirmation
 - **Raw blocker recall in the 5,000-entity retrieval diagnostic:** approximately **92.65%**
 
 **How we ensured true matches were not lost:**
@@ -74,7 +74,7 @@ The selected classifier uses **16 engineered features**, including six RapidFuzz
 
 **Model type:** XGBoost 3.2.0 `XGBClassifier` (Apache-2.0)
 
-**Selected threshold:** **0.645**
+**Selected threshold:** **0.630**
 **Threshold selection method:** Macro F_0.5 optimization on a grouped validation split, followed by evaluation on a fresh disjoint confirmation split.
 
 Missing address comparisons are represented as missing numerical values while an explicit binary `address_missing` feature informs the classifier that the absence is structural rather than a low similarity score.
@@ -83,21 +83,21 @@ Missing address comparisons are represented as missing numerical values while an
 
 ## 5. Results & Error Analysis
 
-- **Selected validation macro F_0.5:** **0.889840**
-- **Validation precision:** **0.966655**
-- **Validation recall:** **0.787757**
-- **Fresh disjoint confirmation macro F_0.5:** **0.878848**
-- **Fresh confirmation precision:** **0.961121**
-- **Fresh confirmation recall:** **0.781733**
+- **Development macro F_0.5:** **0.888485**
+- **Development precision:** **0.966012**
+- **Development recall:** **0.793169**
+- **Fresh disjoint confirmation macro F_0.5:** **0.881313**
+- **Fresh confirmation precision:** **0.963258**
+- **Fresh confirmation recall:** **0.784493**
 
 The full-test run produced:
 
 - **Source-1 entities:** 1,732,544
 - **Candidate pairs:** 44,931,896
-- **Predicted matching links:** 5,166,347
-- **Source-1 entities with no predicted match:** 133,067
-- **Runtime:** 3,252.18 seconds (54.2 minutes)
-- **Peak retrieval RSS:** 5.04 GiB
+- **Predicted matching links:** 5,236,137
+- **Source-1 entities with no predicted match:** 128,414
+- **Runtime:** 3,796.30 seconds (63.3 minutes)
+- **Peak retrieval RSS:** 4.74 GiB
 
 The generated outputs were checked using the official validator with full ID checking and produced **zero validation errors and zero warnings**.
 
@@ -117,7 +117,7 @@ No labeled France training data were available, so no France F_0.5, precision, r
 
 ## 6. Conclusion
 
-The final selected system is the **missing-address v2 structured-blocking + XGBoost pipeline at threshold 0.645**. XGBoost 3.2.0 is Apache-2.0 licensed and satisfies the challenge's stated model-license requirement. It preserves the validated retrieval and 16-feature missing-address design while replacing the historical scikit-learn classifier. The neural reranker and Latin-diacritic folding variant remain rejected experiments.
+The final selected system is the **10,000-group missing-address v2 structured-blocking + XGBoost pipeline at threshold 0.630**. XGBoost 3.2.0 is Apache-2.0 licensed and satisfies the challenge's stated model-license requirement. It preserves the validated retrieval and 16-feature missing-address design while replacing the historical scikit-learn classifier. The neural reranker and Latin-diacritic folding variant remain rejected experiments.
 
 The project also demonstrated that entity-resolution performance depends strongly on retrieval quality: once a true entity pair is absent from the candidate set, the downstream classifier cannot recover it. Candidate recall and final macro F_0.5 were therefore treated as separate first-class evaluation metrics throughout development.
 

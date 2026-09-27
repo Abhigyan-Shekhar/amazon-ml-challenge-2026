@@ -40,11 +40,11 @@ for name in ['matching_results.tsv','candidate_pairs.tsv']:
 archive=a.run.parent/(a.run.name+'_submission.zip')
 with zipfile.ZipFile(archive,'x',compression=zipfile.ZIP_DEFLATED,compresslevel=3) as z:
  for name in ['matching_results.tsv','candidate_pairs.tsv']:z.write(a.run/name,arcname='output/'+name)
- for name in ['final_manifest.json','package_manifest.json','official_validation.json',parameter_file]:z.write(a.run/name,arcname=name)
+ for name in ['final_manifest.json','package_manifest.json','official_validation.json',parameter_file]:z.write(a.run/name,arcname='code/business_entity_resolution/'+name)
  z.write('Documentation_template.md',arcname='Documentation_template.md')
- z.write('artifacts/methodology.md',arcname='methodology.md')
+ z.write('artifacts/methodology.md',arcname='code/business_entity_resolution/methodology.md')
  for base in ['src','scripts','utils']:
   for source in sorted(Path(base).rglob('*.py')):z.write(source,arcname='code/business_entity_resolution/'+str(source))
- for name in ['README.md','requirements.txt']:z.write(name,arcname=name)
+ for name in ['README.md','requirements.txt']:z.write(name,arcname='code/business_entity_resolution/'+name)
  z.write('config.example.json',arcname='code/business_entity_resolution/config.example.json')
 print('Created',archive,'bytes',archive.stat().st_size,flush=True)

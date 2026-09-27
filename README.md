@@ -1,12 +1,12 @@
 # Amazon ML Challenge 2026 — business entity resolution
 
-The real datasets have been audited. The final license-compliant classifier is **XGBoost 3.2.0 (Apache-2.0)** using the capped10/K20 retrieval pool and the same 16 missing-address-v2 features. Its calibration-selected threshold is **0.645**; it scores **0.889840 macro F0.5** on the 1,000-S1 development holdout and **0.878848** on the fresh disjoint 2,000-S1 confirmation set. Full-test inference completed for all 1,732,544 S1 rows. The historical scikit-learn missing-address v2 model remains archived for comparison. No leaderboard submission has been made.
+The real datasets have been audited. The final license-compliant classifier is **XGBoost 3.2.0 (Apache-2.0)** trained on 10,000 S1 groups, using the capped10/K20 retrieval pool and the same 16 missing-address-v2 features. Its frozen threshold is **0.630**; it scores **0.888485 macro F0.5** on the 2,000-S1 development split and **0.881313** on the fresh disjoint 2,000-S1 confirmation split. Full-test inference completed for all 1,732,544 S1 rows and passed full ID/format validation. No leaderboard submission has been made.
 
 ### License-compliant XGBoost final model
 
-The XGBoost replacement was trained only on the frozen 3,000-S1 training groups. Threshold 0.645 was selected on the frozen 1,000-S1 calibration groups, then evaluated on the 1,000-S1 development holdout and once on the disjoint 2,000-S1 confirmation set. It preserves the exact capped10 retrieval and ordered 16-feature missing-address-v2 schema. Compared with the historical HGB v2, development macro F0.5 changes from 0.892146 to 0.889840, while confirmation changes from 0.877411 to 0.878848.
+The larger XGBoost run used 16,000 total labeled S1 groups: 10,000 train, 2,000 calibration, 2,000 development, and 2,000 fresh confirmation. It preserves the capped10/K20 candidate generation and ordered 16-feature missing-address-v2 schema. The frozen threshold is 0.630. Candidate recall was 0.922384 on development and 0.917453 on confirmation. At this threshold, development macro F0.5 is 0.888485 (precision 0.966012, recall 0.793169); confirmation macro F0.5 is 0.881313 (precision 0.963258, recall 0.784493; singleton F0.5 0.900000). No test labels were used.
 
-The full-test XGBoost run scored **44,931,896 candidates**, selected **5,166,347 links**, and left **133,067** S1 match lists empty. Runtime was **3,252.18 seconds (54.2 minutes)** and peak retrieval RSS was **5.04 GiB**. These are unlabeled test predictions and runtime measurements, not test accuracy.
+The full-test 10k XGBoost run scored **44,931,896 candidates**, selected **5,236,137 links**, and left **128,414** S1 match lists empty. Runtime was **3,796.30 seconds (63.3 minutes)** and peak retrieval RSS was **4.74 GiB**. The official validator reported zero errors and zero warnings. These are unlabeled test predictions and runtime measurements, not test accuracy.
 
 This repository contains the completed audit, experiments, reproducible scripts, reports, tests, official validator integration, and packaging workflows. Large outputs, checkpoints, raw data, and the prepared GPU validation package remain local and excluded from Git; teammates must reproduce them or arrange a private artifact transfer.
 
@@ -26,7 +26,7 @@ A controlled 100,000-pair `predict_proba` benchmark found about **1.38 million p
 
 Manual review of 30 missed true pairs and 23 false positives is recorded in `artifacts/validation/hgb_score_diagnostic/stratified_manual_review.csv` and reproducibly annotated by `scripts/23_annotate_review.py`. All 16 missed-pair `other` cases now have a subtype and exclusion reason. Four transliterations plus two plausible semantic aliases make **6/30 (20%)**, below the 40% embedding gate; the broader name-variation signal is **11/30 (36.7%)**. Seven `other` labels remain unclear, so the conservative upper bound is **13/30 (43.3%)** if every unclear case were a valid semantic alias. The embedding gate is therefore **indeterminate**, and no embedding feature is promoted on this evidence. Label noise plus shared-address ambiguity is **4/30 (13.3%)**, below the 50% ceiling gate. See [gate report](artifacts/reports/annotation_gate_v2.json).
 
-The XGBoost checkpoint and threshold are frozen, full-test inference is complete, and the official validator passed full ID/format checking. Packaging provenance and explicit human upload approval remain separate gates; a local package is not an upload authorization.
+The 10k-group XGBoost checkpoint and threshold are frozen. Full-test inference and official ID/format validation are complete. The submission archive is generated locally; it has not been uploaded.
 
 ## Completed
 
@@ -150,7 +150,7 @@ python scripts/17_package_baseline.py --run outputs/new_missing_address_v2 --tes
 
 The `--missed` file only produces the historical 515-pair diagnostic count; it does not affect model fitting or threshold selection. Generate the independent confirmation sample first if those frozen local artifacts are unavailable.
 
-`19_confirmation_sample.py` and `20_confirm_frozen.py` produce and evaluate a disjoint confirmation sample. They never recalibrate the frozen threshold. The final compliant model is produced by `scripts/24_xgboost_compliance.py`, with threshold **0.645**. The historical HGB v2 checkpoint remains `artifacts/experiments/capped10_missing_address_v2/model.joblib` at threshold **0.585**. Checkpoints, raw data, pair caches, and outputs remain ignored by Git.
+`19_confirmation_sample.py` and `20_confirm_frozen.py` produce and evaluate a disjoint confirmation sample. They never recalibrate the frozen threshold. The final compliant model is produced by `scripts/24_xgboost_compliance.py`, with threshold **0.630**. The historical HGB v2 checkpoint remains `artifacts/experiments/capped10_missing_address_v2/model.joblib` at threshold **0.585**. Checkpoints, raw data, pair caches, and outputs remain ignored by Git.
 
 Final XGBoost reproduction, using the already frozen capped10/K20 pool and grouped split:
 
