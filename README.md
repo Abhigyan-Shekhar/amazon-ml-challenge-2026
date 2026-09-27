@@ -194,3 +194,12 @@ python scripts/14_gpu_sample_job.py import --job artifacts/gpu_jobs/reranker_add
 For parallel work, start from the latest pushed commit and use separate output directories. Remaining research tasks include retrieval-recall improvements, France/domain-shift investigation (France has no supplied training labels), and review of the final fuzzy full-test artifacts. Do not overwrite the frozen checkpoints or claim a leaderboard score from local validation.
 
 `artifacts/submissions/submission_log.csv` remains empty. No submission slot has been used. Never exceed five uploads per challenge calendar day; the challenge timezone and any additional rules still need confirmation. Reserve the final two hours for packaging and validation.
+
+## Experimental matching-feature handoff
+
+Person 1's versioned extractor and controlled XGBoost ablations are documented in
+[the feature handoff](docs/person1_matching_features.md). On the original fixed
+3,000/1,000/1,000 split, all three added feature families score **0.909947** versus
+**0.889840** for the reproduced 16-feature control. These are exploratory results
+with higher feature-extraction cost; fresh confirmation and full-runtime checks
+are required before production promotion. Existing production packages are unchanged.

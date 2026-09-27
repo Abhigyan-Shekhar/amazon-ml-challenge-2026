@@ -1,0 +1,1305 @@
+{
+  "status": "EXPLORATORY_NOT_PRODUCTION",
+  "feature_version": "matching-features-v1",
+  "split_sizes": {
+    "train": 3000,
+    "calibration": 1000,
+    "validation": 1000
+  },
+  "candidate_pairs": 124815,
+  "train_pairs": 74658,
+  "model_params": {
+    "n_estimators": 200,
+    "max_depth": 4,
+    "learning_rate": 0.08,
+    "reg_lambda": 1,
+    "tree_method": "hist",
+    "device": "cpu",
+    "n_jobs": 2,
+    "random_state": 2026,
+    "objective": "binary:logistic",
+    "eval_metric": "logloss"
+  },
+  "full_feature_build_seconds": 10.381768875002308,
+  "versions": {
+    "numpy": "2.4.3",
+    "pandas": "3.0.1",
+    "scikit-learn": "1.8.0",
+    "xgboost": "3.2.0",
+    "rapidfuzz": "3.14.6",
+    "anyascii": "0.3.3"
+  },
+  "python": "3.14.3",
+  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "source_commit": "1f0550090e8fa62ba655275b63b262bc336a9553",
+  "implementation_sha256": {
+    "src/features/matching.py": "0bc00bd9f4a0a1a50a1ec29329a1eb115edd5a2e0e8727d45ae32177351c4c62",
+    "scripts/24_feature_ablation.py": "c1e511394945d274c94a82b85056464e4cba2548b8f2be4c42bf069559e986c0"
+  },
+  "inputs": {
+    "sample": {
+      "name": "sample_s1.jsonl",
+      "sha256": "c8c327c7340243e966a428d47e75a2d3a808b93f2712474c7fed8631b6a4db81"
+    },
+    "pairs": {
+      "name": "pairs.jsonl",
+      "sha256": "7e9c2c1d688d611f69d38172fbf641ff5ea8420a93c520adcf97780631c2d51a"
+    },
+    "split": {
+      "name": "split.json",
+      "sha256": "c6b0f5aacc93a337eff18ecc70cbf2158185f9c06710168f5edfad708a4d02c0"
+    },
+    "allowed": {
+      "name": "candidate_pairs_internal.tsv",
+      "sha256": "0f3aaeddb54a5dae112ebd8a1b17990fa15517725d4d133c9ee811684a8b83f0"
+    }
+  },
+  "df_policy": "Unique training S1 records only; no labels, held-out rows or target rows.",
+  "runs": {
+    "baseline": {
+      "families": [],
+      "feature_count": 16,
+      "feature_names": [
+        "name_jaccard",
+        "address_jaccard",
+        "name_exact",
+        "address_exact",
+        "numeric_jaccard",
+        "numeric_conflict",
+        "country_match",
+        "name_length_ratio",
+        "address_length_ratio",
+        "address_missing",
+        "name_levenshtein",
+        "address_levenshtein",
+        "name_token_sort",
+        "address_token_sort",
+        "name_weighted_ratio",
+        "address_weighted_ratio"
+      ],
+      "threshold": 0.6449999999999999,
+      "calibration": {
+        "macro_F0.5": 0.8862421426637199,
+        "precision": 0.9670253384241583,
+        "recall": 0.789011611441518,
+        "singleton_F0.5": 0.9130434782608695,
+        "matched_F0.5": 0.8849498350772744,
+        "multi_match_F0.5": 0.8967764399467513
+      },
+      "development": {
+        "macro_F0.5": 0.8898400234877208,
+        "precision": 0.9666549666549666,
+        "recall": 0.7877574370709383,
+        "singleton_F0.5": 0.9230769230769231,
+        "matched_F0.5": 0.8880169024132076,
+        "multi_match_F0.5": 0.8957080629158214
+      },
+      "development_slices": {
+        "country:India": {
+          "s1": 404,
+          "macro_F0.5": 0.8592664899851008,
+          "precision": 0.9465930018416207,
+          "recall": 0.7542186353631695,
+          "singleton_F0.5": 0.875,
+          "matched_F0.5": 0.8582727946157386,
+          "multi_match_F0.5": 0.8688929559277547
+        },
+        "country:US": {
+          "s1": 596,
+          "macro_F0.5": 0.9105643649894966,
+          "precision": 0.979013045944413,
+          "recall": 0.8091889357712142,
+          "singleton_F0.5": 0.9642857142857143,
+          "matched_F0.5": 0.9079161294608098,
+          "multi_match_F0.5": 0.9134511430537197
+        },
+        "true_matches:0": {
+          "s1": 52,
+          "macro_F0.5": 0.9230769230769231,
+          "precision": 0.0,
+          "recall": 0.0,
+          "singleton_F0.5": 0.9230769230769231,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "true_matches:1": {
+          "s1": 59,
+          "macro_F0.5": 0.7721280602636535,
+          "precision": 0.9787234042553191,
+          "recall": 0.7796610169491526,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.7721280602636535,
+          "multi_match_F0.5": null
+        },
+        "true_matches:2+": {
+          "s1": 889,
+          "macro_F0.5": 0.8957080629158214,
+          "precision": 0.9678341672623302,
+          "recall": 0.7878964212976433,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.8957080629158214,
+          "multi_match_F0.5": 0.8957080629158214
+        },
+        "nonlatin_s1_name": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "missing_s1_address": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "any_candidate_missing_address": {
+          "s1": 220,
+          "macro_F0.5": 0.8527418658052286,
+          "precision": 0.9568,
+          "recall": 0.7170263788968825,
+          "singleton_F0.5": 1.0,
+          "matched_F0.5": 0.8479023966063395,
+          "multi_match_F0.5": 0.8524427693065548
+        }
+      },
+      "paired_vs_baseline": {
+        "delta": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "replicates": 2000,
+        "unit": "S1",
+        "seed": 2026,
+        "caveat": "Exploratory multiple comparisons; not independent confirmation."
+      },
+      "fit_seconds": 0.2691817910017562,
+      "prediction_seconds": 0.05640012500225566,
+      "feature_benchmark": {
+        "pairs": 10000,
+        "seconds": [
+          0.2576919999992242,
+          0.2540640830011398,
+          0.25690724999731174
+        ],
+        "median_pairs_per_second": 38924.553511450686,
+        "scope": "Feature transform only, warm cache, 3 repetitions; excludes I/O/retrieval."
+      }
+    },
+    "name": {
+      "families": [
+        "name"
+      ],
+      "feature_count": 26,
+      "feature_names": [
+        "name_jaccard",
+        "address_jaccard",
+        "name_exact",
+        "address_exact",
+        "numeric_jaccard",
+        "numeric_conflict",
+        "country_match",
+        "name_length_ratio",
+        "address_length_ratio",
+        "address_missing",
+        "name_levenshtein",
+        "address_levenshtein",
+        "name_token_sort",
+        "address_token_sort",
+        "name_weighted_ratio",
+        "address_weighted_ratio",
+        "name_idf_jaccard",
+        "name_idf_containment_min",
+        "name_idf_containment_max",
+        "name_distinctive_conflict",
+        "name_core_exact",
+        "name_core_token_sort",
+        "name_core_jaccard",
+        "name_acronym_match",
+        "name_initials_match",
+        "name_idf_soft_agreement"
+      ],
+      "threshold": 0.6299999999999999,
+      "calibration": {
+        "macro_F0.5": 0.8912190258775229,
+        "precision": 0.9663036078965282,
+        "recall": 0.8040215236476919,
+        "singleton_F0.5": 0.8695652173913043,
+        "matched_F0.5": 0.8922631298506529,
+        "multi_match_F0.5": 0.9041162587887274
+      },
+      "development": {
+        "macro_F0.5": 0.8989567372486117,
+        "precision": 0.9670216420474064,
+        "recall": 0.8052059496567505,
+        "singleton_F0.5": 0.9423076923076923,
+        "matched_F0.5": 0.8965788367601389,
+        "multi_match_F0.5": 0.9014636464488821
+      },
+      "development_slices": {
+        "country:India": {
+          "s1": 404,
+          "macro_F0.5": 0.8700226511692067,
+          "precision": 0.9502262443438914,
+          "recall": 0.7703595011005135,
+          "singleton_F0.5": 0.9166666666666666,
+          "matched_F0.5": 0.8670767133483145,
+          "multi_match_F0.5": 0.8726937726463389
+        },
+        "country:US": {
+          "s1": 596,
+          "macro_F0.5": 0.9185697754635104,
+          "precision": 0.9772978959025471,
+          "recall": 0.8274730426629161,
+          "singleton_F0.5": 0.9642857142857143,
+          "matched_F0.5": 0.9163161728455145,
+          "multi_match_F0.5": 0.920500161077107
+        },
+        "true_matches:0": {
+          "s1": 52,
+          "macro_F0.5": 0.9423076923076923,
+          "precision": 0.0,
+          "recall": 0.0,
+          "singleton_F0.5": 0.9423076923076923,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "true_matches:1": {
+          "s1": 59,
+          "macro_F0.5": 0.8229755178907722,
+          "precision": 0.98,
+          "recall": 0.8305084745762712,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.8229755178907722,
+          "multi_match_F0.5": null
+        },
+        "true_matches:2+": {
+          "s1": 889,
+          "macro_F0.5": 0.9014636464488821,
+          "precision": 0.9678096571028691,
+          "recall": 0.8047716031422752,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.9014636464488821,
+          "multi_match_F0.5": 0.9014636464488821
+        },
+        "nonlatin_s1_name": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "missing_s1_address": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "any_candidate_missing_address": {
+          "s1": 220,
+          "macro_F0.5": 0.8697652801828203,
+          "precision": 0.9629629629629629,
+          "recall": 0.7482014388489209,
+          "singleton_F0.5": 1.0,
+          "matched_F0.5": 0.8654852659165281,
+          "multi_match_F0.5": 0.8657687458263128
+        }
+      },
+      "paired_vs_baseline": {
+        "delta": 0.009116713760891003,
+        "ci95": [
+          0.003671164865131825,
+          0.014642089476027218
+        ],
+        "replicates": 2000,
+        "unit": "S1",
+        "seed": 2026,
+        "caveat": "Exploratory multiple comparisons; not independent confirmation."
+      },
+      "fit_seconds": 0.2923110000010638,
+      "prediction_seconds": 0.0503588329993363,
+      "feature_benchmark": {
+        "pairs": 10000,
+        "seconds": [
+          0.3929350420003175,
+          0.3827964579977561,
+          0.3821612499996263
+        ],
+        "median_pairs_per_second": 26123.543703370993,
+        "scope": "Feature transform only, warm cache, 3 repetitions; excludes I/O/retrieval."
+      }
+    },
+    "address": {
+      "families": [
+        "address"
+      ],
+      "feature_count": 29,
+      "feature_names": [
+        "name_jaccard",
+        "address_jaccard",
+        "name_exact",
+        "address_exact",
+        "numeric_jaccard",
+        "numeric_conflict",
+        "country_match",
+        "name_length_ratio",
+        "address_length_ratio",
+        "address_missing",
+        "name_levenshtein",
+        "address_levenshtein",
+        "name_token_sort",
+        "address_token_sort",
+        "name_weighted_ratio",
+        "address_weighted_ratio",
+        "postcode_equal",
+        "postcode_conflict",
+        "postcode_both_known",
+        "building_equal",
+        "building_conflict",
+        "building_both_known",
+        "unit_equal",
+        "unit_conflict",
+        "unit_both_known",
+        "address_word_jaccard",
+        "address_word_token_sort",
+        "address_word_idf_jaccard",
+        "address_abbreviation_token_sort"
+      ],
+      "threshold": 0.6699999999999999,
+      "calibration": {
+        "macro_F0.5": 0.8922614201077054,
+        "precision": 0.9693526170798898,
+        "recall": 0.7972245822713112,
+        "singleton_F0.5": 0.9130434782608695,
+        "matched_F0.5": 0.8912593502177204,
+        "multi_match_F0.5": 0.9007931062383705
+      },
+      "development": {
+        "macro_F0.5": 0.8908842708024742,
+        "precision": 0.9694950911640954,
+        "recall": 0.790903890160183,
+        "singleton_F0.5": 0.9038461538461539,
+        "matched_F0.5": 0.8901732814372091,
+        "multi_match_F0.5": 0.9001322881167688
+      },
+      "development_slices": {
+        "country:India": {
+          "s1": 404,
+          "macro_F0.5": 0.8573404250711524,
+          "precision": 0.950925925925926,
+          "recall": 0.7534849596478357,
+          "singleton_F0.5": 0.8333333333333334,
+          "matched_F0.5": 0.8588566624440673,
+          "multi_match_F0.5": 0.8695197067039266
+        },
+        "country:US": {
+          "s1": 596,
+          "macro_F0.5": 0.9136220454257193,
+          "precision": 0.9808126410835214,
+          "recall": 0.8148148148148148,
+          "singleton_F0.5": 0.9642857142857143,
+          "matched_F0.5": 0.9111245406227617,
+          "multi_match_F0.5": 0.9203880896497524
+        },
+        "true_matches:0": {
+          "s1": 52,
+          "macro_F0.5": 0.9038461538461539,
+          "precision": 0.0,
+          "recall": 0.0,
+          "singleton_F0.5": 0.9038461538461539,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "true_matches:1": {
+          "s1": 59,
+          "macro_F0.5": 0.7401129943502825,
+          "precision": 0.9375,
+          "recall": 0.7627118644067796,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.7401129943502825,
+          "multi_match_F0.5": null
+        },
+        "true_matches:2+": {
+          "s1": 889,
+          "macro_F0.5": 0.9001322881167688,
+          "precision": 0.9724705041115481,
+          "recall": 0.7913878382310154,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.9001322881167688,
+          "multi_match_F0.5": 0.9001322881167688
+        },
+        "nonlatin_s1_name": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "missing_s1_address": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "any_candidate_missing_address": {
+          "s1": 220,
+          "macro_F0.5": 0.8550207781390948,
+          "precision": 0.9629629629629629,
+          "recall": 0.7170263788968825,
+          "singleton_F0.5": 1.0,
+          "matched_F0.5": 0.8502562027727739,
+          "multi_match_F0.5": 0.8570340564808024
+        }
+      },
+      "paired_vs_baseline": {
+        "delta": 0.0010442473147535092,
+        "ci95": [
+          -0.004534571758052756,
+          0.00641204822991064
+        ],
+        "replicates": 2000,
+        "unit": "S1",
+        "seed": 2026,
+        "caveat": "Exploratory multiple comparisons; not independent confirmation."
+      },
+      "fit_seconds": 0.31263154100088286,
+      "prediction_seconds": 0.06169829200007371,
+      "feature_benchmark": {
+        "pairs": 10000,
+        "seconds": [
+          0.5240601670011529,
+          0.39505866699983017,
+          0.3796334170001501
+        ],
+        "median_pairs_per_second": 25312.696152048473,
+        "scope": "Feature transform only, warm cache, 3 repetitions; excludes I/O/retrieval."
+      }
+    },
+    "views": {
+      "families": [
+        "views"
+      ],
+      "feature_count": 24,
+      "feature_names": [
+        "name_jaccard",
+        "address_jaccard",
+        "name_exact",
+        "address_exact",
+        "numeric_jaccard",
+        "numeric_conflict",
+        "country_match",
+        "name_length_ratio",
+        "address_length_ratio",
+        "address_missing",
+        "name_levenshtein",
+        "address_levenshtein",
+        "name_token_sort",
+        "address_token_sort",
+        "name_weighted_ratio",
+        "address_weighted_ratio",
+        "name_romanized_token_sort",
+        "name_romanized_levenshtein",
+        "address_romanized_token_sort",
+        "name_romanization_changed",
+        "name_ocr_token_sort",
+        "name_ocr_changed",
+        "name_compact_similarity",
+        "name_nonlatin_mismatch"
+      ],
+      "threshold": 0.5599999999999994,
+      "calibration": {
+        "macro_F0.5": 0.8926945356575172,
+        "precision": 0.9611650485436893,
+        "recall": 0.8130841121495327,
+        "singleton_F0.5": 0.8695652173913043,
+        "matched_F0.5": 0.8938097858045253,
+        "multi_match_F0.5": 0.9067728865065736
+      },
+      "development": {
+        "macro_F0.5": 0.8998631187687028,
+        "precision": 0.9645897173987061,
+        "recall": 0.8103546910755148,
+        "singleton_F0.5": 0.9038461538461539,
+        "matched_F0.5": 0.8996446400513745,
+        "multi_match_F0.5": 0.9036080576075898
+      },
+      "development_slices": {
+        "country:India": {
+          "s1": 404,
+          "macro_F0.5": 0.87793112963845,
+          "precision": 0.9475524475524476,
+          "recall": 0.7953044754218636,
+          "singleton_F0.5": 0.8333333333333334,
+          "matched_F0.5": 0.8807478325629838,
+          "multi_match_F0.5": 0.8845441266055882
+        },
+        "country:US": {
+          "s1": 596,
+          "macro_F0.5": 0.9147297691187402,
+          "precision": 0.9754601226993865,
+          "recall": 0.819971870604782,
+          "singleton_F0.5": 0.9642857142857143,
+          "matched_F0.5": 0.9122868704133259,
+          "multi_match_F0.5": 0.9162223222332133
+        },
+        "true_matches:0": {
+          "s1": 52,
+          "macro_F0.5": 0.9038461538461539,
+          "precision": 0.0,
+          "recall": 0.0,
+          "singleton_F0.5": 0.9038461538461539,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "true_matches:1": {
+          "s1": 59,
+          "macro_F0.5": 0.839924670433145,
+          "precision": 0.9803921568627451,
+          "recall": 0.847457627118644,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.839924670433145,
+          "multi_match_F0.5": null
+        },
+        "true_matches:2+": {
+          "s1": 889,
+          "macro_F0.5": 0.9036080576075898,
+          "precision": 0.966655088572421,
+          "recall": 0.8097177771312191,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.9036080576075898,
+          "multi_match_F0.5": 0.9036080576075898
+        },
+        "nonlatin_s1_name": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "missing_s1_address": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "any_candidate_missing_address": {
+          "s1": 220,
+          "macro_F0.5": 0.8666163145426989,
+          "precision": 0.9592476489028213,
+          "recall": 0.7338129496402878,
+          "singleton_F0.5": 1.0,
+          "matched_F0.5": 0.8622328131426937,
+          "multi_match_F0.5": 0.862405772812591
+        }
+      },
+      "paired_vs_baseline": {
+        "delta": 0.010023095280982232,
+        "ci95": [
+          0.0038204726726495967,
+          0.016381051571934594
+        ],
+        "replicates": 2000,
+        "unit": "S1",
+        "seed": 2026,
+        "caveat": "Exploratory multiple comparisons; not independent confirmation."
+      },
+      "fit_seconds": 0.2838273749985092,
+      "prediction_seconds": 0.050912624999909895,
+      "feature_benchmark": {
+        "pairs": 10000,
+        "seconds": [
+          0.4771478329967067,
+          0.41926654200142366,
+          0.4149221670013503
+        ],
+        "median_pairs_per_second": 23851.175799203276,
+        "scope": "Feature transform only, warm cache, 3 repetitions; excludes I/O/retrieval."
+      }
+    },
+    "name+address": {
+      "families": [
+        "name",
+        "address"
+      ],
+      "feature_count": 39,
+      "feature_names": [
+        "name_jaccard",
+        "address_jaccard",
+        "name_exact",
+        "address_exact",
+        "numeric_jaccard",
+        "numeric_conflict",
+        "country_match",
+        "name_length_ratio",
+        "address_length_ratio",
+        "address_missing",
+        "name_levenshtein",
+        "address_levenshtein",
+        "name_token_sort",
+        "address_token_sort",
+        "name_weighted_ratio",
+        "address_weighted_ratio",
+        "name_idf_jaccard",
+        "name_idf_containment_min",
+        "name_idf_containment_max",
+        "name_distinctive_conflict",
+        "name_core_exact",
+        "name_core_token_sort",
+        "name_core_jaccard",
+        "name_acronym_match",
+        "name_initials_match",
+        "name_idf_soft_agreement",
+        "postcode_equal",
+        "postcode_conflict",
+        "postcode_both_known",
+        "building_equal",
+        "building_conflict",
+        "building_both_known",
+        "unit_equal",
+        "unit_conflict",
+        "unit_both_known",
+        "address_word_jaccard",
+        "address_word_token_sort",
+        "address_word_idf_jaccard",
+        "address_abbreviation_token_sort"
+      ],
+      "threshold": 0.5699999999999992,
+      "calibration": {
+        "macro_F0.5": 0.8980894341888882,
+        "precision": 0.9651741293532339,
+        "recall": 0.8241291418861513,
+        "singleton_F0.5": 0.8913043478260869,
+        "matched_F0.5": 0.8984165976822727,
+        "multi_match_F0.5": 0.9095886276779018
+      },
+      "development": {
+        "macro_F0.5": 0.9071217525381653,
+        "precision": 0.9657027572293208,
+        "recall": 0.8215102974828375,
+        "singleton_F0.5": 0.9423076923076923,
+        "matched_F0.5": 0.9051917220866723,
+        "multi_match_F0.5": 0.9116480156034854
+      },
+      "development_slices": {
+        "country:India": {
+          "s1": 404,
+          "macro_F0.5": 0.881329619035996,
+          "precision": 0.950530035335689,
+          "recall": 0.789435069699193,
+          "singleton_F0.5": 0.9166666666666666,
+          "matched_F0.5": 0.8790978055014274,
+          "multi_match_F0.5": 0.8855977698728442
+        },
+        "country:US": {
+          "s1": 596,
+          "macro_F0.5": 0.924605010818159,
+          "precision": 0.9750271444082519,
+          "recall": 0.8420065635255509,
+          "singleton_F0.5": 0.9642857142857143,
+          "matched_F0.5": 0.9226489198021528,
+          "multi_match_F0.5": 0.9288850006289938
+        },
+        "true_matches:0": {
+          "s1": 52,
+          "macro_F0.5": 0.9423076923076923,
+          "precision": 0.0,
+          "recall": 0.0,
+          "singleton_F0.5": 0.9423076923076923,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "true_matches:1": {
+          "s1": 59,
+          "macro_F0.5": 0.8079096045197741,
+          "precision": 0.9245283018867925,
+          "recall": 0.8305084745762712,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.8079096045197741,
+          "multi_match_F0.5": null
+        },
+        "true_matches:2+": {
+          "s1": 889,
+          "macro_F0.5": 0.9116480156034854,
+          "precision": 0.9677751114158382,
+          "recall": 0.8213558335757929,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.9116480156034854,
+          "multi_match_F0.5": 0.9116480156034854
+        },
+        "nonlatin_s1_name": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "missing_s1_address": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "any_candidate_missing_address": {
+          "s1": 220,
+          "macro_F0.5": 0.8859345948080604,
+          "precision": 0.9607843137254902,
+          "recall": 0.7637889688249401,
+          "singleton_F0.5": 1.0,
+          "matched_F0.5": 0.882185966468419,
+          "multi_match_F0.5": 0.8803400742826102
+        }
+      },
+      "paired_vs_baseline": {
+        "delta": 0.01728172905044456,
+        "ci95": [
+          0.01068643775832448,
+          0.024251928581116928
+        ],
+        "replicates": 2000,
+        "unit": "S1",
+        "seed": 2026,
+        "caveat": "Exploratory multiple comparisons; not independent confirmation."
+      },
+      "fit_seconds": 0.38090670900055557,
+      "prediction_seconds": 0.06152062500041211,
+      "feature_benchmark": {
+        "pairs": 10000,
+        "seconds": [
+          0.493402457999764,
+          0.490642790999118,
+          0.4901850000023842
+        ],
+        "median_pairs_per_second": 20381.426535660597,
+        "scope": "Feature transform only, warm cache, 3 repetitions; excludes I/O/retrieval."
+      }
+    },
+    "name+views": {
+      "families": [
+        "name",
+        "views"
+      ],
+      "feature_count": 34,
+      "feature_names": [
+        "name_jaccard",
+        "address_jaccard",
+        "name_exact",
+        "address_exact",
+        "numeric_jaccard",
+        "numeric_conflict",
+        "country_match",
+        "name_length_ratio",
+        "address_length_ratio",
+        "address_missing",
+        "name_levenshtein",
+        "address_levenshtein",
+        "name_token_sort",
+        "address_token_sort",
+        "name_weighted_ratio",
+        "address_weighted_ratio",
+        "name_idf_jaccard",
+        "name_idf_containment_min",
+        "name_idf_containment_max",
+        "name_distinctive_conflict",
+        "name_core_exact",
+        "name_core_token_sort",
+        "name_core_jaccard",
+        "name_acronym_match",
+        "name_initials_match",
+        "name_idf_soft_agreement",
+        "name_romanized_token_sort",
+        "name_romanized_levenshtein",
+        "address_romanized_token_sort",
+        "name_romanization_changed",
+        "name_ocr_token_sort",
+        "name_ocr_changed",
+        "name_compact_similarity",
+        "name_nonlatin_mismatch"
+      ],
+      "threshold": 0.6449999999999999,
+      "calibration": {
+        "macro_F0.5": 0.8990137403796816,
+        "precision": 0.9732203389830508,
+        "recall": 0.8130841121495327,
+        "singleton_F0.5": 0.9130434782608695,
+        "matched_F0.5": 0.8983372540667524,
+        "multi_match_F0.5": 0.9127495210258595
+      },
+      "development": {
+        "macro_F0.5": 0.904922059518849,
+        "precision": 0.9725369035358736,
+        "recall": 0.8103546910755148,
+        "singleton_F0.5": 0.9230769230769231,
+        "matched_F0.5": 0.9039262231211487,
+        "multi_match_F0.5": 0.908173795234301
+      },
+      "development_slices": {
+        "country:India": {
+          "s1": 404,
+          "macro_F0.5": 0.8857814247541052,
+          "precision": 0.9616413916146298,
+          "recall": 0.7909024211298606,
+          "singleton_F0.5": 0.875,
+          "matched_F0.5": 0.8864623568438378,
+          "multi_match_F0.5": 0.8906783617093301
+        },
+        "country:US": {
+          "s1": 596,
+          "macro_F0.5": 0.9178965837553532,
+          "precision": 0.9793526785714286,
+          "recall": 0.8227848101265823,
+          "singleton_F0.5": 0.9642857142857143,
+          "matched_F0.5": 0.9156097956306173,
+          "multi_match_F0.5": 0.9197502129311973
+        },
+        "true_matches:0": {
+          "s1": 52,
+          "macro_F0.5": 0.9230769230769231,
+          "precision": 0.0,
+          "recall": 0.0,
+          "singleton_F0.5": 0.9230769230769231,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "true_matches:1": {
+          "s1": 59,
+          "macro_F0.5": 0.839924670433145,
+          "precision": 0.9803921568627451,
+          "recall": 0.847457627118644,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.839924670433145,
+          "multi_match_F0.5": null
+        },
+        "true_matches:2+": {
+          "s1": 889,
+          "macro_F0.5": 0.908173795234301,
+          "precision": 0.9737578726382086,
+          "recall": 0.8097177771312191,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.908173795234301,
+          "multi_match_F0.5": 0.908173795234301
+        },
+        "nonlatin_s1_name": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "missing_s1_address": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "any_candidate_missing_address": {
+          "s1": 220,
+          "macro_F0.5": 0.8761539039272473,
+          "precision": 0.9688473520249221,
+          "recall": 0.7458033573141487,
+          "singleton_F0.5": 1.0,
+          "matched_F0.5": 0.8720838444318987,
+          "multi_match_F0.5": 0.872591547883468
+        }
+      },
+      "paired_vs_baseline": {
+        "delta": 0.015082036031128312,
+        "ci95": [
+          0.00833322155932191,
+          0.02163591041289587
+        ],
+        "replicates": 2000,
+        "unit": "S1",
+        "seed": 2026,
+        "caveat": "Exploratory multiple comparisons; not independent confirmation."
+      },
+      "fit_seconds": 0.3569535000024189,
+      "prediction_seconds": 0.05118604199742549,
+      "feature_benchmark": {
+        "pairs": 10000,
+        "seconds": [
+          0.5393832080007996,
+          0.5366425840002194,
+          0.5487209170023561
+        ],
+        "median_pairs_per_second": 18539.694695102884,
+        "scope": "Feature transform only, warm cache, 3 repetitions; excludes I/O/retrieval."
+      }
+    },
+    "address+views": {
+      "families": [
+        "address",
+        "views"
+      ],
+      "feature_count": 37,
+      "feature_names": [
+        "name_jaccard",
+        "address_jaccard",
+        "name_exact",
+        "address_exact",
+        "numeric_jaccard",
+        "numeric_conflict",
+        "country_match",
+        "name_length_ratio",
+        "address_length_ratio",
+        "address_missing",
+        "name_levenshtein",
+        "address_levenshtein",
+        "name_token_sort",
+        "address_token_sort",
+        "name_weighted_ratio",
+        "address_weighted_ratio",
+        "postcode_equal",
+        "postcode_conflict",
+        "postcode_both_known",
+        "building_equal",
+        "building_conflict",
+        "building_both_known",
+        "unit_equal",
+        "unit_conflict",
+        "unit_both_known",
+        "address_word_jaccard",
+        "address_word_token_sort",
+        "address_word_idf_jaccard",
+        "address_abbreviation_token_sort",
+        "name_romanized_token_sort",
+        "name_romanized_levenshtein",
+        "address_romanized_token_sort",
+        "name_romanization_changed",
+        "name_ocr_token_sort",
+        "name_ocr_changed",
+        "name_compact_similarity",
+        "name_nonlatin_mismatch"
+      ],
+      "threshold": 0.6399999999999999,
+      "calibration": {
+        "macro_F0.5": 0.8982500701594225,
+        "precision": 0.9704584040747029,
+        "recall": 0.8094024355706598,
+        "singleton_F0.5": 0.9130434782608695,
+        "matched_F0.5": 0.897536761173399,
+        "multi_match_F0.5": 0.9091448978070915
+      },
+      "development": {
+        "macro_F0.5": 0.9017974363223298,
+        "precision": 0.9720110573600553,
+        "recall": 0.8046338672768879,
+        "singleton_F0.5": 0.9038461538461539,
+        "matched_F0.5": 0.9016850594117404,
+        "multi_match_F0.5": 0.9079086272842106
+      },
+      "development_slices": {
+        "country:India": {
+          "s1": 404,
+          "macro_F0.5": 0.8750202075318163,
+          "precision": 0.9609090909090909,
+          "recall": 0.7754952311078503,
+          "singleton_F0.5": 0.8333333333333334,
+          "matched_F0.5": 0.8776530627443518,
+          "multi_match_F0.5": 0.8840469160658141
+        },
+        "country:US": {
+          "s1": 596,
+          "macro_F0.5": 0.9199484437575102,
+          "precision": 0.9788182831661093,
+          "recall": 0.8232536333802156,
+          "singleton_F0.5": 0.9642857142857143,
+          "matched_F0.5": 0.9177628036610493,
+          "multi_match_F0.5": 0.9236974978847943
+        },
+        "true_matches:0": {
+          "s1": 52,
+          "macro_F0.5": 0.9038461538461539,
+          "precision": 0.0,
+          "recall": 0.0,
+          "singleton_F0.5": 0.9038461538461539,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "true_matches:1": {
+          "s1": 59,
+          "macro_F0.5": 0.8079096045197741,
+          "precision": 0.9423076923076923,
+          "recall": 0.8305084745762712,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.8079096045197741,
+          "multi_match_F0.5": null
+        },
+        "true_matches:2+": {
+          "s1": 889,
+          "macro_F0.5": 0.9079086272842106,
+          "precision": 0.9749559082892416,
+          "recall": 0.8041897003200466,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.9079086272842106,
+          "multi_match_F0.5": 0.9079086272842106
+        },
+        "nonlatin_s1_name": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "missing_s1_address": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "any_candidate_missing_address": {
+          "s1": 220,
+          "macro_F0.5": 0.8698176846730287,
+          "precision": 0.9650238473767886,
+          "recall": 0.7278177458033573,
+          "singleton_F0.5": 1.0,
+          "matched_F0.5": 0.8655393926200294,
+          "multi_match_F0.5": 0.8679822090898578
+        }
+      },
+      "paired_vs_baseline": {
+        "delta": 0.01195741283460911,
+        "ci95": [
+          0.004930248635624596,
+          0.018936668790817263
+        ],
+        "replicates": 2000,
+        "unit": "S1",
+        "seed": 2026,
+        "caveat": "Exploratory multiple comparisons; not independent confirmation."
+      },
+      "fit_seconds": 0.4065966669986665,
+      "prediction_seconds": 0.06239583299975493,
+      "feature_benchmark": {
+        "pairs": 10000,
+        "seconds": [
+          0.5939820420026081,
+          0.5259657909991802,
+          0.5607177500023681
+        ],
+        "median_pairs_per_second": 17834.284718038205,
+        "scope": "Feature transform only, warm cache, 3 repetitions; excludes I/O/retrieval."
+      }
+    },
+    "name+address+views": {
+      "families": [
+        "name",
+        "address",
+        "views"
+      ],
+      "feature_count": 47,
+      "feature_names": [
+        "name_jaccard",
+        "address_jaccard",
+        "name_exact",
+        "address_exact",
+        "numeric_jaccard",
+        "numeric_conflict",
+        "country_match",
+        "name_length_ratio",
+        "address_length_ratio",
+        "address_missing",
+        "name_levenshtein",
+        "address_levenshtein",
+        "name_token_sort",
+        "address_token_sort",
+        "name_weighted_ratio",
+        "address_weighted_ratio",
+        "name_idf_jaccard",
+        "name_idf_containment_min",
+        "name_idf_containment_max",
+        "name_distinctive_conflict",
+        "name_core_exact",
+        "name_core_token_sort",
+        "name_core_jaccard",
+        "name_acronym_match",
+        "name_initials_match",
+        "name_idf_soft_agreement",
+        "postcode_equal",
+        "postcode_conflict",
+        "postcode_both_known",
+        "building_equal",
+        "building_conflict",
+        "building_both_known",
+        "unit_equal",
+        "unit_conflict",
+        "unit_both_known",
+        "address_word_jaccard",
+        "address_word_token_sort",
+        "address_word_idf_jaccard",
+        "address_abbreviation_token_sort",
+        "name_romanized_token_sort",
+        "name_romanized_levenshtein",
+        "address_romanized_token_sort",
+        "name_romanization_changed",
+        "name_ocr_token_sort",
+        "name_ocr_changed",
+        "name_compact_similarity",
+        "name_nonlatin_mismatch"
+      ],
+      "threshold": 0.5999999999999999,
+      "calibration": {
+        "macro_F0.5": 0.9062972996735361,
+        "precision": 0.9707349517791819,
+        "recall": 0.826677994902294,
+        "singleton_F0.5": 0.8913043478260869,
+        "matched_F0.5": 0.9070202302657612,
+        "multi_match_F0.5": 0.9181867287218259
+      },
+      "development": {
+        "macro_F0.5": 0.9099467852333808,
+        "precision": 0.9712449255751014,
+        "recall": 0.8212242562929062,
+        "singleton_F0.5": 0.9230769230769231,
+        "matched_F0.5": 0.9092265667018784,
+        "multi_match_F0.5": 0.9148257801650328
+      },
+      "development_slices": {
+        "country:India": {
+          "s1": 404,
+          "macro_F0.5": 0.8865781461795649,
+          "precision": 0.9571303587051618,
+          "recall": 0.8026412325752018,
+          "singleton_F0.5": 0.875,
+          "matched_F0.5": 0.8873093975172216,
+          "multi_match_F0.5": 0.8928431071904889
+        },
+        "country:US": {
+          "s1": 596,
+          "macro_F0.5": 0.9257872721087863,
+          "precision": 0.9801434087148373,
+          "recall": 0.8330989217065167,
+          "singleton_F0.5": 0.9642857142857143,
+          "matched_F0.5": 0.9238894615789377,
+          "multi_match_F0.5": 0.929371324525759
+        },
+        "true_matches:0": {
+          "s1": 52,
+          "macro_F0.5": 0.9230769230769231,
+          "precision": 0.0,
+          "recall": 0.0,
+          "singleton_F0.5": 0.9230769230769231,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "true_matches:1": {
+          "s1": 59,
+          "macro_F0.5": 0.824858757062147,
+          "precision": 0.9259259259259259,
+          "recall": 0.847457627118644,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.824858757062147,
+          "multi_match_F0.5": null
+        },
+        "true_matches:2+": {
+          "s1": 889,
+          "macro_F0.5": 0.9148257801650328,
+          "precision": 0.9737659647911633,
+          "recall": 0.8207739307535642,
+          "singleton_F0.5": null,
+          "matched_F0.5": 0.9148257801650328,
+          "multi_match_F0.5": 0.9148257801650328
+        },
+        "nonlatin_s1_name": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "missing_s1_address": {
+          "s1": 0,
+          "macro_F0.5": null,
+          "precision": null,
+          "recall": null,
+          "singleton_F0.5": null,
+          "matched_F0.5": null,
+          "multi_match_F0.5": null
+        },
+        "any_candidate_missing_address": {
+          "s1": 220,
+          "macro_F0.5": 0.8861270842205367,
+          "precision": 0.9693251533742331,
+          "recall": 0.7577937649880095,
+          "singleton_F0.5": 1.0,
+          "matched_F0.5": 0.8823847818240285,
+          "multi_match_F0.5": 0.8832425171287285
+        }
+      },
+      "paired_vs_baseline": {
+        "delta": 0.020106761745660076,
+        "ci95": [
+          0.01262188509558364,
+          0.027675617060025012
+        ],
+        "replicates": 2000,
+        "unit": "S1",
+        "seed": 2026,
+        "caveat": "Exploratory multiple comparisons; not independent confirmation."
+      },
+      "fit_seconds": 0.49206404100186774,
+      "prediction_seconds": 0.06258645900015836,
+      "feature_benchmark": {
+        "pairs": 10000,
+        "seconds": [
+          0.6757245840017276,
+          0.6423701250023441,
+          0.653522749998956
+        ],
+        "median_pairs_per_second": 15301.68613107344,
+        "scope": "Feature transform only, warm cache, 3 repetitions; excludes I/O/retrieval."
+      }
+    }
+  },
+  "development_candidate_metrics": {
+    "candidate_pair_recall": 0.937929061784897,
+    "entity_complete_coverage": 0.83,
+    "matched_entity_complete_coverage": 0.820675105485232
+  },
+  "development_oracle_macro_f05": 0.9745783406789099,
+  "best_development_configuration": "name+address+views",
+  "selection_caveat": "Historical 3000/1000/1000 sample used for exploration; no 10k-training or untouched-confirmation claim. Confirm on Person 2 fresh split before promotion.",
+  "validation_checks": {
+    "pytest": "42 passed",
+    "legacy_16_feature_parity": true,
+    "serialized_model_extractor_prediction_parity": true,
+    "production_promoted": false
+  }
+}
